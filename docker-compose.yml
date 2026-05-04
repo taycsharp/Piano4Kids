@@ -1,0 +1,57 @@
+services:
+  db:
+    image: postgres:16
+    container_name: piano_academy_db
+    environment:
+      POSTGRES_DB: piano_academy
+      POSTGRES_USER: piano
+      POSTGRES_PASSWORD: piano
+    ports:
+      - "5438:5432"
+    volumes:
+      - piano_academy_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U piano -d piano_academy"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    container_name: piano_academy_backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://piano:piano@db:5432/piano_academy
+      # Use the Ollama already running on your Mac/host machine.
+      OLLAMA_BASE_URL: http://host.docker.internal:11434
+      OLLAMA_MODEL: qwen2.5:3b-instruct
+      OLLAMA_TIMEOUT_SECONDS: 300
+      JWT_SECRET: dev-change-this-secret-for-production
+      CORS_ORIGINS: http://localhost:3000,http://127.0.0.1:3000
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend/app:/app/app
+      - ./backend/media:/app/media
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  frontend:
+    build: ./frontend
+    container_name: piano_academy_frontend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+      NEXT_INTERNAL_API_URL: http://backend:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend/app:/app/app
+      - ./frontend/package.json:/app/package.json
+      - ./frontend/next.config.mjs:/app/next.config.mjs
+    command: npm run dev -- -H 0.0.0.0
+
+volumes:
+  piano_academy_pgdata:
