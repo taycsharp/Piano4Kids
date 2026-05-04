@@ -98,7 +98,7 @@ const dashboardTexts = {
     publicCms: 'Public website CMS', publicCmsSub: 'Admin can manage courses, public teacher profiles, testimonials, and blog articles.',
     tabs: { homepage: 'Homepage hero', courses: 'Courses', publicTeachers: 'Public teachers', testimonials: 'Testimonials', posts: 'Blog posts' },
     language: 'Language', english: 'English', vietnamese: 'Tiếng Việt', koreanReady: 'Korean / 한국어 - ready later',
-    sortOrder: 'Sort order', imageUrl: 'Image URL', imageAlt: 'Image alt text', uploadImage: 'Upload image', chooseExistingImage: 'Choose existing photo first', mediaLibrary: 'Photo library', usePhoto: 'Use photo', duplicateImageReused: 'This photo already exists. The app reused the existing photo instead of uploading a duplicate.', removeImage: 'Remove image', imageSaved: 'Image uploaded and attached to this form.', deletePhoto: 'Delete photo', confirmDeletePhoto: 'Delete this photo from the library?', photoDeleted: 'Photo deleted from the library.', published: 'Published', hidden: 'Hidden', publishedQ: 'Published',
+    sortOrder: 'Sort order', imageUrl: 'Image URL', imageAlt: 'Image alt text', uploadImage: 'Upload image', chooseExistingImage: 'Choose existing photo first', mediaLibrary: 'Photo library', usePhoto: 'Use photo', duplicateImageReused: 'This photo already exists. The app reused the existing photo instead of uploading a duplicate.', removeImage: 'Remove image', imageSaved: 'Image uploaded and attached to this form.', deletePhoto: 'Delete photo', confirmDeletePhoto: 'Delete this photo from the library?', photoDeleted: 'Photo deleted from the library.', photoInUseWarning: 'Cannot delete this photo because it is used in homepage, teacher, course, result, or blog content. Remove references first or ask an admin to force delete.', published: 'Published', hidden: 'Hidden', publishedQ: 'Published',
     editCourse: 'Edit course', createCourse: 'Create course', courseTitle: 'Course title', age: 'Age', level: 'Level', description: 'Description', outcomes: 'Outcomes, one per line', saveCourse: 'Save course', clear: 'Clear',
     editPublicTeacher: 'Edit public teacher', createPublicTeacher: 'Create public teacher', name: 'Name', publicRole: 'Public role', initials: 'Initials', bio: 'Bio', saveTeacherProfile: 'Save teacher profile',
     editTestimonial: 'Edit testimonial', createTestimonial: 'Create testimonial', studentLabel: 'Student label', result: 'Result', parentQuote: 'Parent quote', saveTestimonial: 'Save testimonial',
@@ -126,7 +126,7 @@ const dashboardTexts = {
     publicCms: 'CMS trang công khai', publicCmsSub: 'Admin có thể quản lý khóa học, hồ sơ giáo viên công khai, cảm nhận phụ huynh và bài viết.',
     tabs: { homepage: 'Hero trang chủ', courses: 'Khóa học', publicTeachers: 'Giáo viên công khai', testimonials: 'Cảm nhận', posts: 'Bài viết' },
     language: 'Ngôn ngữ', english: 'English', vietnamese: 'Tiếng Việt', koreanReady: 'Korean / 한국어 - chuẩn bị sau',
-    sortOrder: 'Thứ tự hiển thị', imageUrl: 'Đường dẫn ảnh', imageAlt: 'Mô tả ảnh', uploadImage: 'Tải ảnh lên', chooseExistingImage: 'Chọn ảnh có sẵn trước', mediaLibrary: 'Thư viện ảnh', usePhoto: 'Dùng ảnh này', duplicateImageReused: 'Ảnh này đã có trong thư viện. Hệ thống dùng lại ảnh cũ thay vì tải trùng.', removeImage: 'Xóa ảnh', imageSaved: 'Ảnh đã được tải lên và gắn vào form này.', deletePhoto: 'Xóa ảnh', confirmDeletePhoto: 'Xóa ảnh này khỏi thư viện?', photoDeleted: 'Ảnh đã được xóa khỏi thư viện.', published: 'Đã xuất bản', hidden: 'Ẩn', publishedQ: 'Trạng thái',
+    sortOrder: 'Thứ tự hiển thị', imageUrl: 'Đường dẫn ảnh', imageAlt: 'Mô tả ảnh', uploadImage: 'Tải ảnh lên', chooseExistingImage: 'Chọn ảnh có sẵn trước', mediaLibrary: 'Thư viện ảnh', usePhoto: 'Dùng ảnh này', duplicateImageReused: 'Ảnh này đã có trong thư viện. Hệ thống dùng lại ảnh cũ thay vì tải trùng.', removeImage: 'Xóa ảnh', imageSaved: 'Ảnh đã được tải lên và gắn vào form này.', deletePhoto: 'Xóa ảnh', confirmDeletePhoto: 'Xóa ảnh này khỏi thư viện?', photoDeleted: 'Ảnh đã được xóa khỏi thư viện.', photoInUseWarning: 'Không thể xóa ảnh vì đang được dùng trong nội dung trang chủ, giáo viên, khóa học, kết quả hoặc blog. Hãy gỡ tham chiếu trước hoặc nhờ admin xóa cưỡng bức.', published: 'Đã xuất bản', hidden: 'Ẩn', publishedQ: 'Trạng thái',
     editCourse: 'Sửa khóa học', createCourse: 'Tạo khóa học', courseTitle: 'Tên khóa học', age: 'Độ tuổi', level: 'Cấp độ', description: 'Mô tả', outcomes: 'Kết quả đạt được, mỗi dòng một ý', saveCourse: 'Lưu khóa học', clear: 'Xóa form',
     editPublicTeacher: 'Sửa hồ sơ giáo viên', createPublicTeacher: 'Tạo hồ sơ giáo viên', name: 'Tên', publicRole: 'Vai trò công khai', initials: 'Chữ viết tắt', bio: 'Giới thiệu', saveTeacherProfile: 'Lưu hồ sơ giáo viên',
     editTestimonial: 'Sửa cảm nhận', createTestimonial: 'Tạo cảm nhận', studentLabel: 'Thông tin học viên', result: 'Kết quả', parentQuote: 'Chia sẻ phụ huynh', saveTestimonial: 'Lưu cảm nhận',
@@ -367,7 +367,13 @@ function PublicContentAdmin({ setMessage, locale }) {
       await api(path, { method, body: JSON.stringify(cleaned) })
       setMessage({ type: 'success', text: d.cmsSaved })
       resetForms(); await loadCms()
-    } catch (err) { setMessage({ type: 'error', text: err.message }) }
+    } catch (err) {
+      if ((err?.message || '').toLowerCase().includes('currently used by cms content')) {
+        setMessage({ type: 'error', text: d.photoInUseWarning })
+      } else {
+        setMessage({ type: 'error', text: err.message })
+      }
+    }
   }
 
   async function deleteItem(type, id) {
@@ -922,4 +928,3 @@ function MainApp() {
 export default function Page() {
   return <MainApp />
 }
-

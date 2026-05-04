@@ -4,7 +4,7 @@ from pathlib import Path
 
 import hashlib
 
-from fastapi import Depends, FastAPI, File, HTTPException, UploadFile
+from fastapi import Depends, FastAPI, File, HTTPException, Query, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import func, select
@@ -108,6 +108,21 @@ def list_media_assets() -> list[dict]:
             if path.is_file() and path.suffix.lower() in ALLOWED_IMAGE_SUFFIXES:
                 assets.append(build_media_asset(path))
     return sorted(assets, key=lambda item: (item["library"] == "uploads", item["updated_at"]), reverse=True)
+
+
+def media_url_in_use(url: str, db: Session) -> list[str]:
+    usage: list[str] = []
+    if db.scalar(select(PublicHomepageHero.id).where(PublicHomepageHero.image_url == url).limit(1)):
+        usage.append("homepage")
+    if db.scalar(select(PublicTeacher.id).where(PublicTeacher.image_url == url).limit(1)):
+        usage.append("teacher")
+    if db.scalar(select(PublicCourse.id).where(PublicCourse.image_url == url).limit(1)):
+        usage.append("course")
+    if db.scalar(select(PublicTestimonial.id).where(PublicTestimonial.image_url == url).limit(1)):
+        usage.append("result")
+    if db.scalar(select(BlogPost.id).where(BlogPost.image_url == url).limit(1)):
+        usage.append("blog")
+    return usage
 
 
 def seed_demo_data(db: Session) -> None:
@@ -503,10 +518,22 @@ def cms_media_library(_: User = Depends(require_role("admin"))) -> dict:
 
 
 @app.delete("/cms/media-library")
-def cms_delete_media(url: str, _: User = Depends(require_role("admin"))) -> dict:
+def cms_delete_media(
+    url: str,
+    force: bool = Query(default=False),
+    db: Session = Depends(get_db),
+    _: User = Depends(require_role("admin")),
+) -> dict:
     path = path_from_media_url(url)
     if not path.exists() or not path.is_file():
         raise HTTPException(status_code=404, detail="Photo not found in media library")
+    if not force:
+        usage = media_url_in_use(url, db)
+        if usage:
+            raise HTTPException(
+                status_code=409,
+                detail=f"Photo is currently used by CMS content ({', '.join(usage)}). Remove references first or retry with force=true.",
+            )
     path.unlink()
     return {"deleted": True, "url": url, "message": "Photo deleted from the media library."}
 
