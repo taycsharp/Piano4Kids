@@ -1,6 +1,8 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import { api, API_URL, TOKEN_KEY, uploadCmsImage } from '../../lib/api'
+import { SectionHeader, StatCard } from '../../components/dashboard/common'
 import { useParams, useRouter } from 'next/navigation'
 import { getDictionary, languageNames, locales, normalizeLocale } from '../../i18n'
 import {
@@ -41,32 +43,6 @@ import PianoIcon from '@mui/icons-material/Piano'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import SchoolIcon from '@mui/icons-material/School'
 import DeleteIcon from '@mui/icons-material/Delete'
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
-const TOKEN_KEY = 'piano_academy_token'
-
-function extractError(data, fallback) {
-  if (!data) return fallback
-  if (typeof data.detail === 'string') return data.detail
-  if (Array.isArray(data.detail)) return data.detail.map((e) => e.msg || JSON.stringify(e)).join('; ')
-  if (data.detail) return JSON.stringify(data.detail)
-  return fallback
-}
-
-async function api(path, options = {}) {
-  const token = localStorage.getItem(TOKEN_KEY)
-  const response = await fetch(`${API_URL}${path}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(options.headers || {}),
-    },
-    ...options,
-  })
-  const data = await response.json().catch(() => null)
-  if (!response.ok) throw new Error(extractError(data, `Request failed: ${response.status}`))
-  return data
-}
 
 const theme = createTheme({
   palette: {
@@ -145,34 +121,6 @@ const dashboardTexts = {
 
 function getDashboardText(locale) {
   return dashboardTexts[locale] || dashboardTexts.en
-}
-
-function StatCard({ title, value, icon }) {
-  return (
-    <Card className="statCard">
-      <CardContent>
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Box>
-            <Typography variant="body2" color="text.secondary" fontWeight={700}>{title}</Typography>
-            <Typography variant="h4" fontWeight={900}>{value ?? 0}</Typography>
-          </Box>
-          <Avatar className="statIcon">{icon}</Avatar>
-        </Stack>
-      </CardContent>
-    </Card>
-  )
-}
-
-function SectionHeader({ icon, title, subtitle }) {
-  return (
-    <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 2 }}>
-      <Avatar className="sectionIcon">{icon}</Avatar>
-      <Box>
-        <Typography variant="h5" fontWeight={900}>{title}</Typography>
-        <Typography color="text.secondary">{subtitle}</Typography>
-      </Box>
-    </Stack>
-  )
 }
 
 function LoginPage({ onLogin, locale }) {

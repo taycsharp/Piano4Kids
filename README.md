@@ -238,3 +238,12 @@ Admins can also delete photos directly from the media library grid. The backend 
 - `DELETE /cms/media-library?url=/media/uploads/example.webp`
 
 The delete endpoint accepts only local `/media/...` image URLs and prevents path traversal.
+
+## Frontend organization notes
+
+To keep the dashboard refactor clean without changing behavior, shared frontend utilities/components are being moved into clearer folders:
+
+- `frontend/app/lib/` for API helpers and shared fetch/upload logic
+- `frontend/app/components/dashboard/` for reusable dashboard UI blocks
+
+This keeps localized routes (`/en`, `/vi`, dashboard/public pages) unchanged while making follow-up refactors safer.
