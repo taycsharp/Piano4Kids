@@ -222,21 +222,13 @@ function AppShell({ user, aiStatus, dashboard, onLogout, children, locale }) {
         </Toolbar>
       </AppBar>
       <Container maxWidth="xl" sx={{ py: 4 }}>
-        <Paper className="hero" elevation={0}>
-          <Stack direction={{ xs: 'column', md: 'row' }} spacing={3} justifyContent="space-between" alignItems={{ xs: 'flex-start', md: 'center' }}>
-            <Box>
-              <Typography variant="h3" fontWeight={900}>{d.heroTitle}</Typography>
-              <Typography variant="h6" color="text.secondary" sx={{ mt: 1 }}>
-                {d.heroSubtitle}
-              </Typography>
-            </Box>
-            <Stack direction="row" spacing={1}>
-              <Chip label={`${dashboard?.teachers ?? 0} ${d.teachers}`} />
-              <Chip label={`${dashboard?.students ?? 0} ${d.students}`} />
-              <Chip label={`${dashboard?.advice_records ?? 0} ${d.records}`} />
-              <Chip color="success" label={`${dashboard?.generated_advice ?? 0} ${d.aiSaved}`} />
-            </Stack>
-          </Stack>
+        <Paper className="hero dashboardHeader" elevation={0}>
+          <Box>
+            <Typography variant="h4" fontWeight={900}>{d.heroTitle}</Typography>
+            <Typography variant="body1" color="text.secondary" sx={{ mt: 0.75 }}>
+              {d.heroSubtitle}
+            </Typography>
+          </Box>
         </Paper>
         {children}
       </Container>
@@ -619,7 +611,7 @@ function AdminDashboard({ setMessage, refreshCounters, locale }) {
   return (
     <Grid container spacing={3} className="dashboardStatsGrid adminDashboardLayout">
       <Grid item xs={12}>
-        <Grid container spacing={2.25} className="adminStatsGrid">
+        <Grid container spacing={2} className="adminStatsGrid">
           <Grid item xs={12} sm={6} lg={3}><StatCard title={d.adminStats.teachers} value={teachers.length} icon={<SchoolIcon />} /></Grid>
           <Grid item xs={12} sm={6} lg={3}><StatCard title={d.adminStats.students} value={students.length} icon={<FamilyRestroomIcon />} /></Grid>
           <Grid item xs={12} sm={6} lg={3}><StatCard title={d.adminStats.feedbackRecords} value={records.length} icon={<DashboardIcon />} /></Grid>
@@ -628,8 +620,8 @@ function AdminDashboard({ setMessage, refreshCounters, locale }) {
       </Grid>
 
       <Grid item xs={12}>
-        <Grid container spacing={2.5} className="adminMainGrid">
-          <Grid item xs={12} lg={8} className="adminOverviewCol">
+        <Grid container spacing={2} className="adminMainGrid">
+          <Grid item xs={12} xl={8} lg={7} className="adminOverviewCol">
             <Card><CardContent>
               <SectionHeader icon={<AdminPanelSettingsIcon />} title={d.overview} subtitle={d.overviewSub} />
               <Stack spacing={2}>
@@ -645,7 +637,7 @@ function AdminDashboard({ setMessage, refreshCounters, locale }) {
             </CardContent></Card>
           </Grid>
 
-          <Grid item xs={12} lg={4} className="adminTeacherFormCol">
+          <Grid item xs={12} xl={4} lg={5} className="adminTeacherFormCol">
             <Card><CardContent>
               <SectionHeader icon={<PersonAddIcon />} title={d.createTeacher} subtitle={d.createTeacherSub} />
               <Box component="form" onSubmit={createTeacher}>
