@@ -74,9 +74,35 @@ img { max-width: 100%; height: auto; display: block; }
   background: linear-gradient(180deg, rgba(248, 251, 255, 0.92), rgba(255, 255, 255, 0.98));
   border: 1px solid rgba(21, 87, 176, 0.1);
 }
-.cmsContentGrid { align-items: flex-start; }
-.cmsContentGrid > .MuiGrid-item { display: flex; }
+.cmsContentGrid {
+  align-items: flex-start;
+  display: grid !important;
+  grid-template-columns: minmax(700px, 1.2fr) minmax(360px, 0.8fr);
+  gap: 24px;
+}
+.cmsContentGrid > .MuiGrid-item {
+  display: flex;
+  width: 100%;
+  max-width: none;
+  flex-basis: auto;
+  padding-top: 0 !important;
+  margin-left: 0 !important;
+}
 .cmsContentGrid > .MuiGrid-item > * { width: 100%; }
+.cmsFormPanel form, .cmsFormPanel .MuiStack-root { width: 100%; }
+.cmsFormPanel .MuiFormControl-root,
+.cmsFormPanel .MuiTextField-root,
+.cmsFormPanel .MuiInputBase-root,
+.cmsFormPanel .MuiOutlinedInput-root,
+.cmsFormPanel .MuiFormControl-root .MuiInputBase-input,
+.cmsFormPanel .MuiSelect-select {
+  width: 100%;
+}
+.cmsFormPanel .MuiStack-root[direction="row"] {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
 .cmsListRow {
   border-radius: 18px;
   border: 1px solid rgba(21,87,176,0.12);
@@ -98,6 +124,28 @@ img { max-width: 100%; height: auto; display: block; }
   border-radius: 18px;
   background: #f8fbff;
   border: 1px solid rgba(21,87,176,0.1);
+}
+
+
+@media (max-width: 1535px) {
+  .cmsContentGrid {
+    grid-template-columns: minmax(620px, 1.15fr) minmax(320px, 0.85fr);
+  }
+}
+
+@media (max-width: 1279px) {
+  .cmsContentGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .cmsFormPanel {
+    position: static;
+  }
+}
+
+@media (max-width: 720px) {
+  .cmsFormPanel .MuiStack-root[direction="row"] {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 /* Public marketing website */
