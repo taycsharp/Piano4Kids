@@ -25,7 +25,11 @@ Teacher: {record.teacher.name}
 Teacher feedback:
 {record.teacher_feedback}
 
-Write parent advice in this format:
+Output requirements:
+- Return plain text only (no markdown, no **bold**, no headings in another language).
+- Keep each line short and clear for parents.
+
+Write exactly 4 numbered lines in the same language as the teacher feedback:
 1. Short summary
 2. What parent should encourage at home
 3. Simple practice suggestion this week
@@ -84,10 +88,28 @@ async def generate_parent_advice_once(record: AdviceRecord) -> str:
         response = await client.post(f"{url}/api/generate", json=payload)
         response.raise_for_status()
         data = response.json()
-        advice = (data.get("response") or "").strip()
+        advice = _normalize_advice((data.get("response") or "").strip(), record.teacher_feedback)
         if not advice:
             raise RuntimeError("Ollama returned an empty response.")
         return advice
+
+
+def _normalize_advice(advice: str, teacher_feedback: str) -> str:
+    text = advice.replace("**", "").strip()
+    lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
+    if len(lines) == 1:
+        parts = re.split(r"\s(?=\d+[\).])", lines[0])
+        if len(parts) > 1:
+            lines = [p.strip() for p in parts if p.strip()]
+
+    lang = _dominant_language_hint(teacher_feedback)
+    mapped = []
+    for i, ln in enumerate(lines[:4], start=1):
+        content = re.sub(r"^\d+[\).]\s*", "", ln)
+        content = re.sub(r"^(Short Summary|What Parent Should Encourage At Home|Simple Practice Suggestion This Week|Positive Sentence For The Child)\s*:\s*", "", content, flags=re.IGNORECASE)
+        mapped.append(f"{i}. {content}")
+
+    return "\n".join(mapped) if mapped else text
 
 
 def mark_advice_generated(record: AdviceRecord, advice: str) -> None:
