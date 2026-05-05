@@ -1,6 +1,8 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import { api, API_URL, TOKEN_KEY, uploadCmsImage } from '../../lib/api'
+import { SectionHeader, StatCard } from '../../components/dashboard/common'
 import { useParams, useRouter } from 'next/navigation'
 import { getDictionary, languageNames, locales, normalizeLocale } from '../../i18n'
 import {
@@ -42,32 +44,6 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import SchoolIcon from '@mui/icons-material/School'
 import DeleteIcon from '@mui/icons-material/Delete'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
-const TOKEN_KEY = 'piano_academy_token'
-
-function extractError(data, fallback) {
-  if (!data) return fallback
-  if (typeof data.detail === 'string') return data.detail
-  if (Array.isArray(data.detail)) return data.detail.map((e) => e.msg || JSON.stringify(e)).join('; ')
-  if (data.detail) return JSON.stringify(data.detail)
-  return fallback
-}
-
-async function api(path, options = {}) {
-  const token = localStorage.getItem(TOKEN_KEY)
-  const response = await fetch(`${API_URL}${path}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(options.headers || {}),
-    },
-    ...options,
-  })
-  const data = await response.json().catch(() => null)
-  if (!response.ok) throw new Error(extractError(data, `Request failed: ${response.status}`))
-  return data
-}
-
 const theme = createTheme({
   palette: {
     mode: 'light',
@@ -104,6 +80,7 @@ const dashboardTexts = {
     editTestimonial: 'Edit testimonial', createTestimonial: 'Create testimonial', studentLabel: 'Student label', result: 'Result', parentQuote: 'Parent quote', saveTestimonial: 'Save testimonial',
     editHomepage: 'Edit homepage hero', createHomepage: 'Create homepage hero', eyebrow: 'Eyebrow text', heroTitleField: 'Hero title', heroSubtitleField: 'Hero subtitle', primaryButtonText: 'Primary button text', primaryButtonHref: 'Primary button link', secondaryButtonText: 'Secondary button text', secondaryButtonHref: 'Secondary button link', cardTitle: 'Hero card title', cardText: 'Hero card text', stat1Value: 'Stat 1 value', stat1Label: 'Stat 1 label', stat2Value: 'Stat 2 value', stat2Label: 'Stat 2 label', stat3Value: 'Stat 3 value', stat3Label: 'Stat 3 label', saveHomepage: 'Save homepage hero', editBlogPost: 'Edit blog post', createBlogPost: 'Create blog post', slug: 'Slug', slugHelp: 'Example: how-to-practice-piano', title: 'Title', excerpt: 'Excerpt', readTime: 'Read time', content: 'Content, separate paragraphs with blank lines', saveBlogPost: 'Save blog post',
     edit: 'Edit', delete: 'Delete', cmsSaved: 'Public content saved. Refresh the public page to see updates.', cmsDeleted: 'Public content deleted.',
+    noContentYet: 'No saved content in this section yet. Create your first item from the editor.',
     adminStats: { teachers: 'Teachers', students: 'Students', feedbackRecords: 'Feedback records', aiAdviceSaved: 'AI advice saved' },
     createTeacher: 'Create teacher', createTeacherSub: 'Admin creates teacher login accounts.', teacherName: 'Teacher name', teacherEmail: 'Teacher email', specialty: 'Specialty', initialPassword: 'Initial password', createTeacherAccount: 'Create teacher account', teacherCreated: 'Teacher account created', defaultPassword: 'Default password',
     overview: 'Academy overview', overviewSub: 'All teachers, students, and saved advice records.', noSpecialty: 'No specialty',
@@ -132,6 +109,7 @@ const dashboardTexts = {
     editTestimonial: 'Sửa cảm nhận', createTestimonial: 'Tạo cảm nhận', studentLabel: 'Thông tin học viên', result: 'Kết quả', parentQuote: 'Chia sẻ phụ huynh', saveTestimonial: 'Lưu cảm nhận',
     editHomepage: 'Sửa hero trang chủ', createHomepage: 'Tạo hero trang chủ', eyebrow: 'Dòng giới thiệu nhỏ', heroTitleField: 'Tiêu đề hero', heroSubtitleField: 'Mô tả hero', primaryButtonText: 'Nút chính', primaryButtonHref: 'Link nút chính', secondaryButtonText: 'Nút phụ', secondaryButtonHref: 'Link nút phụ', cardTitle: 'Tiêu đề thẻ hero', cardText: 'Nội dung thẻ hero', stat1Value: 'Chỉ số 1', stat1Label: 'Nhãn chỉ số 1', stat2Value: 'Chỉ số 2', stat2Label: 'Nhãn chỉ số 2', stat3Value: 'Chỉ số 3', stat3Label: 'Nhãn chỉ số 3', saveHomepage: 'Lưu hero trang chủ', editBlogPost: 'Sửa bài viết', createBlogPost: 'Tạo bài viết', slug: 'Đường dẫn slug', slugHelp: 'Ví dụ: cach-luyen-tap-piano', title: 'Tiêu đề', excerpt: 'Tóm tắt', readTime: 'Thời gian đọc', content: 'Nội dung, cách đoạn bằng dòng trống', saveBlogPost: 'Lưu bài viết',
     edit: 'Sửa', delete: 'Xóa', cmsSaved: 'Nội dung công khai đã được lưu. Tải lại trang công khai để xem cập nhật.', cmsDeleted: 'Nội dung công khai đã được xóa.',
+    noContentYet: 'Mục này chưa có nội dung đã lưu. Hãy tạo nội dung đầu tiên từ khung biên tập.',
     adminStats: { teachers: 'Giáo viên', students: 'Học viên', feedbackRecords: 'Bản ghi phản hồi', aiAdviceSaved: 'Lời khuyên AI đã lưu' },
     createTeacher: 'Tạo giáo viên', createTeacherSub: 'Admin tạo tài khoản đăng nhập cho giáo viên.', teacherName: 'Tên giáo viên', teacherEmail: 'Email giáo viên', specialty: 'Chuyên môn', initialPassword: 'Mật khẩu ban đầu', createTeacherAccount: 'Tạo tài khoản giáo viên', teacherCreated: 'Đã tạo tài khoản giáo viên', defaultPassword: 'Mật khẩu mặc định',
     overview: 'Tổng quan học viện', overviewSub: 'Tất cả giáo viên, học viên và bản ghi lời khuyên đã lưu.', noSpecialty: 'Chưa có chuyên môn',
@@ -145,34 +123,6 @@ const dashboardTexts = {
 
 function getDashboardText(locale) {
   return dashboardTexts[locale] || dashboardTexts.en
-}
-
-function StatCard({ title, value, icon }) {
-  return (
-    <Card className="statCard">
-      <CardContent>
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Box>
-            <Typography variant="body2" color="text.secondary" fontWeight={700}>{title}</Typography>
-            <Typography variant="h4" fontWeight={900}>{value ?? 0}</Typography>
-          </Box>
-          <Avatar className="statIcon">{icon}</Avatar>
-        </Stack>
-      </CardContent>
-    </Card>
-  )
-}
-
-function SectionHeader({ icon, title, subtitle }) {
-  return (
-    <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 2 }}>
-      <Avatar className="sectionIcon">{icon}</Avatar>
-      <Box>
-        <Typography variant="h5" fontWeight={900}>{title}</Typography>
-        <Typography color="text.secondary">{subtitle}</Typography>
-      </Box>
-    </Stack>
-  )
 }
 
 function LoginPage({ onLogin, locale }) {
@@ -272,21 +222,13 @@ function AppShell({ user, aiStatus, dashboard, onLogout, children, locale }) {
         </Toolbar>
       </AppBar>
       <Container maxWidth="xl" sx={{ py: 4 }}>
-        <Paper className="hero" elevation={0}>
-          <Stack direction={{ xs: 'column', md: 'row' }} spacing={3} justifyContent="space-between" alignItems={{ xs: 'flex-start', md: 'center' }}>
-            <Box>
-              <Typography variant="h3" fontWeight={900}>{d.heroTitle}</Typography>
-              <Typography variant="h6" color="text.secondary" sx={{ mt: 1 }}>
-                {d.heroSubtitle}
-              </Typography>
-            </Box>
-            <Stack direction="row" spacing={1}>
-              <Chip label={`${dashboard?.teachers ?? 0} ${d.teachers}`} />
-              <Chip label={`${dashboard?.students ?? 0} ${d.students}`} />
-              <Chip label={`${dashboard?.advice_records ?? 0} ${d.records}`} />
-              <Chip color="success" label={`${dashboard?.generated_advice ?? 0} ${d.aiSaved}`} />
-            </Stack>
-          </Stack>
+        <Paper className="hero dashboardHeader" elevation={0}>
+          <Box>
+            <Typography variant="h4" fontWeight={900}>{d.heroTitle}</Typography>
+            <Typography variant="body1" color="text.secondary" sx={{ mt: 0.75 }}>
+              {d.heroSubtitle}
+            </Typography>
+          </Box>
         </Paper>
         {children}
       </Container>
@@ -490,11 +432,18 @@ function PublicContentAdmin({ setMessage, locale }) {
   }
 
   const currentList = cmsTab === 'homepage' ? heroes : cmsTab === 'courses' ? courses : cmsTab === 'teachers' ? publicTeachers : cmsTab === 'testimonials' ? testimonials : posts
+  const formTitleMap = {
+    homepage: editing.type === 'homepage' ? d.editHomepage : d.createHomepage,
+    courses: editing.type === 'courses' ? d.editCourse : d.createCourse,
+    teachers: editing.type === 'teachers' ? d.editPublicTeacher : d.createPublicTeacher,
+    testimonials: editing.type === 'testimonials' ? d.editTestimonial : d.createTestimonial,
+    posts: editing.type === 'posts' ? d.editBlogPost : d.createBlogPost,
+  }
 
   return (
-    <Card sx={{ mt: 3 }}><CardContent>
+    <Card className="cmsAdminCard" sx={{ mt: 3 }}><CardContent>
       <SectionHeader icon={<AdminPanelSettingsIcon />} title={d.publicCms} subtitle={d.publicCmsSub} />
-      <Tabs value={cmsTab} onChange={(_, v) => { setCmsTab(v); resetForms() }} sx={{ mb: 3 }} variant="scrollable">
+      <Tabs value={cmsTab} onChange={(_, v) => { setCmsTab(v); resetForms() }} sx={{ mb: 3 }} variant="scrollable" allowScrollButtonsMobile>
         <Tab value="homepage" label={d.tabs.homepage} />
         <Tab value="courses" label={d.tabs.courses} />
         <Tab value="teachers" label={d.tabs.publicTeachers} />
@@ -502,9 +451,10 @@ function PublicContentAdmin({ setMessage, locale }) {
         <Tab value="posts" label={d.tabs.posts} />
       </Tabs>
 
-      {cmsTab === 'homepage' && <Grid container spacing={3}>
-        <Grid item xs={12} md={5}><Box component="form" onSubmit={(e) => { e.preventDefault(); saveItem('homepage', heroForm) }}><Stack spacing={2}>
-          <Typography variant="h6" fontWeight={900}>{editing.type === 'homepage' ? d.editHomepage : d.createHomepage}</Typography>
+      {cmsTab === 'homepage' && <Grid container spacing={3} className="cmsContentGrid">
+        <Grid item xs={12} xl={5}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('homepage', heroForm) }}><Stack spacing={2.25}>
+          <Typography variant="h6" fontWeight={900}>Content editor</Typography>
+          <Typography color="text.secondary">{formTitleMap.homepage}</Typography>
           {localeField(heroForm, setHeroForm)}
           <TextField label={d.eyebrow} value={heroForm.eyebrow || ''} onChange={(e) => setHeroForm({ ...heroForm, eyebrow: e.target.value })} />
           <TextField required label={d.heroTitleField} value={heroForm.title} onChange={(e) => setHeroForm({ ...heroForm, title: e.target.value })} />
@@ -520,12 +470,13 @@ function PublicContentAdmin({ setMessage, locale }) {
           {publishField(heroForm, setHeroForm)}
           <Stack direction="row" spacing={1}><Button type="submit" variant="contained">{d.saveHomepage}</Button><Button onClick={resetForms}>{d.clear}</Button></Stack>
         </Stack></Box></Grid>
-        <Grid item xs={12} md={7}>{renderCmsList(currentList, 'homepage')}</Grid>
+        <Grid item xs={12} xl={7}>{renderCmsList(currentList, 'homepage')}</Grid>
       </Grid>}
 
-      {cmsTab === 'courses' && <Grid container spacing={3}>
-        <Grid item xs={12} md={5}><Box component="form" onSubmit={(e) => { e.preventDefault(); saveItem('courses', courseForm) }}><Stack spacing={2}>
-          <Typography variant="h6" fontWeight={900}>{editing.type === 'courses' ? d.editCourse : d.createCourse}</Typography>
+      {cmsTab === 'courses' && <Grid container spacing={3} className="cmsContentGrid">
+        <Grid item xs={12} xl={5}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('courses', courseForm) }}><Stack spacing={2.25}>
+          <Typography variant="h6" fontWeight={900}>Content editor</Typography>
+          <Typography color="text.secondary">{formTitleMap.courses}</Typography>
           {localeField(courseForm, setCourseForm)}
           <TextField required label={d.courseTitle} value={courseForm.title} onChange={(e) => setCourseForm({ ...courseForm, title: e.target.value })} />
           <Stack direction="row" spacing={2}><TextField label={d.age} value={courseForm.age || ''} onChange={(e) => setCourseForm({ ...courseForm, age: e.target.value })} /><TextField label={d.level} value={courseForm.level || ''} onChange={(e) => setCourseForm({ ...courseForm, level: e.target.value })} /></Stack>
@@ -535,12 +486,13 @@ function PublicContentAdmin({ setMessage, locale }) {
           {publishField(courseForm, setCourseForm)}
           <Stack direction="row" spacing={1}><Button type="submit" variant="contained">{d.saveCourse}</Button><Button onClick={resetForms}>{d.clear}</Button></Stack>
         </Stack></Box></Grid>
-        <Grid item xs={12} md={7}>{renderCmsList(currentList, 'courses')}</Grid>
+        <Grid item xs={12} xl={7}>{renderCmsList(currentList, 'courses')}</Grid>
       </Grid>}
 
-      {cmsTab === 'teachers' && <Grid container spacing={3}>
-        <Grid item xs={12} md={5}><Box component="form" onSubmit={(e) => { e.preventDefault(); saveItem('teachers', teacherForm) }}><Stack spacing={2}>
-          <Typography variant="h6" fontWeight={900}>{editing.type === 'teachers' ? d.editPublicTeacher : d.createPublicTeacher}</Typography>
+      {cmsTab === 'teachers' && <Grid container spacing={3} className="cmsContentGrid">
+        <Grid item xs={12} xl={5}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('teachers', teacherForm) }}><Stack spacing={2.25}>
+          <Typography variant="h6" fontWeight={900}>Content editor</Typography>
+          <Typography color="text.secondary">{formTitleMap.teachers}</Typography>
           {localeField(teacherForm, setTeacherForm)}
           <TextField required label={d.name} value={teacherForm.name} onChange={(e) => setTeacherForm({ ...teacherForm, name: e.target.value })} />
           <TextField required label={d.publicRole} value={teacherForm.role} onChange={(e) => setTeacherForm({ ...teacherForm, role: e.target.value })} />
@@ -550,12 +502,13 @@ function PublicContentAdmin({ setMessage, locale }) {
           {publishField(teacherForm, setTeacherForm)}
           <Stack direction="row" spacing={1}><Button type="submit" variant="contained">{d.saveTeacherProfile}</Button><Button onClick={resetForms}>{d.clear}</Button></Stack>
         </Stack></Box></Grid>
-        <Grid item xs={12} md={7}>{renderCmsList(currentList, 'teachers')}</Grid>
+        <Grid item xs={12} xl={7}>{renderCmsList(currentList, 'teachers')}</Grid>
       </Grid>}
 
-      {cmsTab === 'testimonials' && <Grid container spacing={3}>
-        <Grid item xs={12} md={5}><Box component="form" onSubmit={(e) => { e.preventDefault(); saveItem('testimonials', testimonialForm) }}><Stack spacing={2}>
-          <Typography variant="h6" fontWeight={900}>{editing.type === 'testimonials' ? d.editTestimonial : d.createTestimonial}</Typography>
+      {cmsTab === 'testimonials' && <Grid container spacing={3} className="cmsContentGrid">
+        <Grid item xs={12} xl={5}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('testimonials', testimonialForm) }}><Stack spacing={2.25}>
+          <Typography variant="h6" fontWeight={900}>Content editor</Typography>
+          <Typography color="text.secondary">{formTitleMap.testimonials}</Typography>
           {localeField(testimonialForm, setTestimonialForm)}
           <TextField required label={d.studentLabel} value={testimonialForm.student} onChange={(e) => setTestimonialForm({ ...testimonialForm, student: e.target.value })} />
           {imageField(testimonialForm, setTestimonialForm)}
@@ -564,12 +517,13 @@ function PublicContentAdmin({ setMessage, locale }) {
           {publishField(testimonialForm, setTestimonialForm)}
           <Stack direction="row" spacing={1}><Button type="submit" variant="contained">{d.saveTestimonial}</Button><Button onClick={resetForms}>{d.clear}</Button></Stack>
         </Stack></Box></Grid>
-        <Grid item xs={12} md={7}>{renderCmsList(currentList, 'testimonials')}</Grid>
+        <Grid item xs={12} xl={7}>{renderCmsList(currentList, 'testimonials')}</Grid>
       </Grid>}
 
-      {cmsTab === 'posts' && <Grid container spacing={3}>
-        <Grid item xs={12} md={5}><Box component="form" onSubmit={(e) => { e.preventDefault(); saveItem('posts', postForm) }}><Stack spacing={2}>
-          <Typography variant="h6" fontWeight={900}>{editing.type === 'posts' ? d.editBlogPost : d.createBlogPost}</Typography>
+      {cmsTab === 'posts' && <Grid container spacing={3} className="cmsContentGrid">
+        <Grid item xs={12} xl={5}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('posts', postForm) }}><Stack spacing={2.25}>
+          <Typography variant="h6" fontWeight={900}>Content editor</Typography>
+          <Typography color="text.secondary">{formTitleMap.posts}</Typography>
           {localeField(postForm, setPostForm)}
           <TextField required label={d.slug} helperText={d.slugHelp} value={postForm.slug} onChange={(e) => setPostForm({ ...postForm, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') })} />
           <TextField required label={d.title} value={postForm.title} onChange={(e) => setPostForm({ ...postForm, title: e.target.value })} />
@@ -580,16 +534,24 @@ function PublicContentAdmin({ setMessage, locale }) {
           {publishField(postForm, setPostForm)}
           <Stack direction="row" spacing={1}><Button type="submit" variant="contained">{d.saveBlogPost}</Button><Button onClick={resetForms}>{d.clear}</Button></Stack>
         </Stack></Box></Grid>
-        <Grid item xs={12} md={7}>{renderCmsList(currentList, 'posts')}</Grid>
+        <Grid item xs={12} xl={7}>{renderCmsList(currentList, 'posts')}</Grid>
       </Grid>}
     </CardContent></Card>
   )
 
   function renderCmsList(items, type) {
-    return <Stack spacing={2}>{items.map((item) => <Paper className="listRow" key={`${type}-${item.id}`}><Stack spacing={1}>
+    return <Stack spacing={2}>
+      <Typography variant="h6" fontWeight={900}>Existing content</Typography>
+      {!items.length && (
+        <Paper className="listRow cmsEmptyState">
+          <Typography variant="subtitle1" fontWeight={800}>Ready for preview</Typography>
+          <Typography color="text.secondary">{d.noContentYet}</Typography>
+        </Paper>
+      )}
+      {items.map((item) => <Paper className="listRow cmsListRow" key={`${type}-${item.id}`}><Stack spacing={1.25}>
       <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={1}>
         <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
-          {item.image_url && <img className="cmsThumb" src={item.image_url.startsWith('/media') ? `${API_URL}${item.image_url}` : item.image_url} alt={item.image_alt || item.title || item.name || item.student || 'Homepage hero'} />}
+          <CmsThumb src={item.image_url ? (item.image_url.startsWith('/media') ? `${API_URL}${item.image_url}` : item.image_url) : ''} alt={item.image_alt || item.title || item.name || item.student || 'CMS image'} />
           <Box>
             <Typography fontWeight={900}>{item.title || item.name || item.student || item.eyebrow || 'Homepage hero'}</Typography>
             <Typography color="text.secondary">{item.role || item.level || item.read_time || item.result || item.card_title || item.subtitle}</Typography>
@@ -612,8 +574,15 @@ function PublicContentAdmin({ setMessage, locale }) {
         }}>{d.edit}</Button>
         <Button size="small" color="error" onClick={() => deleteItem(type, item.id)}>{d.delete}</Button>
       </Stack>
-    </Stack></Paper>)}</Stack>
+    </Stack></Paper>)}
+    </Stack>
   }
+}
+
+function CmsThumb({ src, alt }) {
+  const [failed, setFailed] = useState(false)
+  if (!src || failed) return <Box className="cmsThumb cmsThumbFallback" aria-hidden="true">No image</Box>
+  return <img className="cmsThumb" src={src} alt={alt} onError={() => setFailed(true)} />
 }
 
 function AdminDashboard({ setMessage, refreshCounters, locale }) {
@@ -640,42 +609,51 @@ function AdminDashboard({ setMessage, refreshCounters, locale }) {
   }
 
   return (
-    <Grid container spacing={3}>
-      <Grid item xs={12} md={3}><StatCard title={d.adminStats.teachers} value={teachers.length} icon={<SchoolIcon />} /></Grid>
-      <Grid item xs={12} md={3}><StatCard title={d.adminStats.students} value={students.length} icon={<FamilyRestroomIcon />} /></Grid>
-      <Grid item xs={12} md={3}><StatCard title={d.adminStats.feedbackRecords} value={records.length} icon={<DashboardIcon />} /></Grid>
-      <Grid item xs={12} md={3}><StatCard title={d.adminStats.aiAdviceSaved} value={records.filter((r) => r.ai_advice_generated_at).length} icon={<CheckCircleIcon />} /></Grid>
-
-      <Grid item xs={12} lg={4}>
-        <Card><CardContent>
-          <SectionHeader icon={<PersonAddIcon />} title={d.createTeacher} subtitle={d.createTeacherSub} />
-          <Box component="form" onSubmit={createTeacher}>
-            <Stack spacing={2}>
-              <TextField required label={d.teacherName} value={teacherForm.name} onChange={(e) => setTeacherForm({ ...teacherForm, name: e.target.value })} />
-              <TextField required type="email" label={d.teacherEmail} value={teacherForm.email} onChange={(e) => setTeacherForm({ ...teacherForm, email: e.target.value })} />
-              <TextField label={d.specialty} value={teacherForm.specialty} onChange={(e) => setTeacherForm({ ...teacherForm, specialty: e.target.value })} />
-              <TextField required label={d.initialPassword} value={teacherForm.password} onChange={(e) => setTeacherForm({ ...teacherForm, password: e.target.value })} />
-              <Button type="submit" variant="contained" size="large">{d.createTeacherAccount}</Button>
-            </Stack>
-          </Box>
-        </CardContent></Card>
+    <Grid container spacing={3} className="dashboardStatsGrid adminDashboardLayout">
+      <Grid item xs={12}>
+        <Grid container spacing={2} className="adminStatsGrid">
+          <Grid item xs={12} sm={6} lg={3}><StatCard title={d.adminStats.teachers} value={teachers.length} icon={<SchoolIcon />} /></Grid>
+          <Grid item xs={12} sm={6} lg={3}><StatCard title={d.adminStats.students} value={students.length} icon={<FamilyRestroomIcon />} /></Grid>
+          <Grid item xs={12} sm={6} lg={3}><StatCard title={d.adminStats.feedbackRecords} value={records.length} icon={<DashboardIcon />} /></Grid>
+          <Grid item xs={12} sm={6} lg={3}><StatCard title={d.adminStats.aiAdviceSaved} value={records.filter((r) => r.ai_advice_generated_at).length} icon={<CheckCircleIcon />} /></Grid>
+        </Grid>
       </Grid>
 
-      <Grid item xs={12} lg={8}>
-        <Card><CardContent>
-          <SectionHeader icon={<AdminPanelSettingsIcon />} title={d.overview} subtitle={d.overviewSub} />
-          <Stack spacing={2}>
-            {teachers.map((t) => (
-              <Paper key={t.id} className="listRow">
-                <Stack direction="row" justifyContent="space-between" alignItems="center">
-                  <Box><Typography fontWeight={900}>{t.name}</Typography><Typography color="text.secondary">{t.email} · {t.specialty || d.noSpecialty}</Typography></Box>
-                  <Chip label={`${students.filter((s) => s.teacher_id === t.id).length} ${d.students}`} />
+      <Grid item xs={12}>
+        <Grid container spacing={2} className="adminMainGrid">
+          <Grid item xs={12} xl={8} lg={7} className="adminOverviewCol">
+            <Card><CardContent>
+              <SectionHeader icon={<AdminPanelSettingsIcon />} title={d.overview} subtitle={d.overviewSub} />
+              <Stack spacing={2}>
+                {teachers.map((t) => (
+                  <Paper key={t.id} className="listRow">
+                    <Stack direction="row" justifyContent="space-between" alignItems="center">
+                      <Box><Typography fontWeight={900}>{t.name}</Typography><Typography color="text.secondary">{t.email} · {t.specialty || d.noSpecialty}</Typography></Box>
+                      <Chip label={`${students.filter((s) => s.teacher_id === t.id).length} ${d.students}`} />
+                    </Stack>
+                  </Paper>
+                ))}
+              </Stack>
+            </CardContent></Card>
+          </Grid>
+
+          <Grid item xs={12} xl={4} lg={5} className="adminTeacherFormCol">
+            <Card><CardContent>
+              <SectionHeader icon={<PersonAddIcon />} title={d.createTeacher} subtitle={d.createTeacherSub} />
+              <Box component="form" onSubmit={createTeacher}>
+                <Stack spacing={2}>
+                  <TextField required label={d.teacherName} value={teacherForm.name} onChange={(e) => setTeacherForm({ ...teacherForm, name: e.target.value })} />
+                  <TextField required type="email" label={d.teacherEmail} value={teacherForm.email} onChange={(e) => setTeacherForm({ ...teacherForm, email: e.target.value })} />
+                  <TextField label={d.specialty} value={teacherForm.specialty} onChange={(e) => setTeacherForm({ ...teacherForm, specialty: e.target.value })} />
+                  <TextField required label={d.initialPassword} value={teacherForm.password} onChange={(e) => setTeacherForm({ ...teacherForm, password: e.target.value })} />
+                  <Button type="submit" variant="contained" size="large">{d.createTeacherAccount}</Button>
                 </Stack>
-              </Paper>
-            ))}
-          </Stack>
-        </CardContent></Card>
+              </Box>
+            </CardContent></Card>
+          </Grid>
+        </Grid>
       </Grid>
+
       <Grid item xs={12}>
         <PublicContentAdmin setMessage={setMessage} locale={locale} />
       </Grid>
@@ -736,7 +714,7 @@ function TeacherDashboard({ setMessage, refreshCounters, locale }) {
   }
 
   return (
-    <Grid container spacing={3}>
+    <Grid container spacing={3} className="dashboardStatsGrid">
       <Grid item xs={12} md={3}><StatCard title={d.myStudents} value={students.length} icon={<FamilyRestroomIcon />} /></Grid>
       <Grid item xs={12} md={3}><StatCard title={d.adminStats.feedbackRecords} value={records.length} icon={<DashboardIcon />} /></Grid>
       <Grid item xs={12} md={3}><StatCard title={d.aiSaved} value={records.filter((r) => r.ai_advice_generated_at).length} icon={<AutoAwesomeIcon />} /></Grid>
@@ -822,7 +800,7 @@ function ParentDashboard({ setMessage, locale }) {
   }, [])
 
   return (
-    <Grid container spacing={3}>
+    <Grid container spacing={3} className="dashboardStatsGrid">
       <Grid item xs={12} md={4}><StatCard title={d.myChildren} value={students.length} icon={<FamilyRestroomIcon />} /></Grid>
       <Grid item xs={12} md={4}><StatCard title={d.parentTeacherFeedback} value={records.length} icon={<DashboardIcon />} /></Grid>
       <Grid item xs={12} md={4}><StatCard title={d.aiAdviceSavedStat} value={records.filter((r) => r.ai_parent_advice).length} icon={<CheckCircleIcon />} /></Grid>
