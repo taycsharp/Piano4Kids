@@ -438,6 +438,13 @@ function PublicContentAdmin({ setMessage, locale }) {
   }
 
   const currentList = cmsTab === 'homepage' ? heroes : cmsTab === 'courses' ? courses : cmsTab === 'teachers' ? publicTeachers : cmsTab === 'testimonials' ? testimonials : posts
+  const formTitleMap = {
+    homepage: editing.type === 'homepage' ? d.editHomepage : d.createHomepage,
+    courses: editing.type === 'courses' ? d.editCourse : d.createCourse,
+    teachers: editing.type === 'teachers' ? d.editPublicTeacher : d.createPublicTeacher,
+    testimonials: editing.type === 'testimonials' ? d.editTestimonial : d.createTestimonial,
+    posts: editing.type === 'posts' ? d.editBlogPost : d.createBlogPost,
+  }
 
   return (
     <Card className="cmsAdminCard" sx={{ mt: 3 }}><CardContent>
@@ -450,9 +457,10 @@ function PublicContentAdmin({ setMessage, locale }) {
         <Tab value="posts" label={d.tabs.posts} />
       </Tabs>
 
-      {cmsTab === 'homepage' && <Grid container spacing={3}>
-        <Grid item xs={12} md={5}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('homepage', heroForm) }}><Stack spacing={2.25}>
-          <Typography variant="h6" fontWeight={900}>{editing.type === 'homepage' ? d.editHomepage : d.createHomepage}</Typography>
+      {cmsTab === 'homepage' && <Grid container spacing={3} className="cmsContentGrid">
+        <Grid item xs={12} lg={6}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('homepage', heroForm) }}><Stack spacing={2.25}>
+          <Typography variant="h6" fontWeight={900}>Content editor</Typography>
+          <Typography color="text.secondary">{formTitleMap.homepage}</Typography>
           {localeField(heroForm, setHeroForm)}
           <TextField label={d.eyebrow} value={heroForm.eyebrow || ''} onChange={(e) => setHeroForm({ ...heroForm, eyebrow: e.target.value })} />
           <TextField required label={d.heroTitleField} value={heroForm.title} onChange={(e) => setHeroForm({ ...heroForm, title: e.target.value })} />
@@ -468,12 +476,13 @@ function PublicContentAdmin({ setMessage, locale }) {
           {publishField(heroForm, setHeroForm)}
           <Stack direction="row" spacing={1}><Button type="submit" variant="contained">{d.saveHomepage}</Button><Button onClick={resetForms}>{d.clear}</Button></Stack>
         </Stack></Box></Grid>
-        <Grid item xs={12} md={7}>{renderCmsList(currentList, 'homepage')}</Grid>
+        <Grid item xs={12} lg={6}>{renderCmsList(currentList, 'homepage')}</Grid>
       </Grid>}
 
-      {cmsTab === 'courses' && <Grid container spacing={3}>
-        <Grid item xs={12} md={5}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('courses', courseForm) }}><Stack spacing={2.25}>
-          <Typography variant="h6" fontWeight={900}>{editing.type === 'courses' ? d.editCourse : d.createCourse}</Typography>
+      {cmsTab === 'courses' && <Grid container spacing={3} className="cmsContentGrid">
+        <Grid item xs={12} lg={6}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('courses', courseForm) }}><Stack spacing={2.25}>
+          <Typography variant="h6" fontWeight={900}>Content editor</Typography>
+          <Typography color="text.secondary">{formTitleMap.courses}</Typography>
           {localeField(courseForm, setCourseForm)}
           <TextField required label={d.courseTitle} value={courseForm.title} onChange={(e) => setCourseForm({ ...courseForm, title: e.target.value })} />
           <Stack direction="row" spacing={2}><TextField label={d.age} value={courseForm.age || ''} onChange={(e) => setCourseForm({ ...courseForm, age: e.target.value })} /><TextField label={d.level} value={courseForm.level || ''} onChange={(e) => setCourseForm({ ...courseForm, level: e.target.value })} /></Stack>
@@ -483,12 +492,13 @@ function PublicContentAdmin({ setMessage, locale }) {
           {publishField(courseForm, setCourseForm)}
           <Stack direction="row" spacing={1}><Button type="submit" variant="contained">{d.saveCourse}</Button><Button onClick={resetForms}>{d.clear}</Button></Stack>
         </Stack></Box></Grid>
-        <Grid item xs={12} md={7}>{renderCmsList(currentList, 'courses')}</Grid>
+        <Grid item xs={12} lg={6}>{renderCmsList(currentList, 'courses')}</Grid>
       </Grid>}
 
-      {cmsTab === 'teachers' && <Grid container spacing={3}>
-        <Grid item xs={12} md={5}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('teachers', teacherForm) }}><Stack spacing={2.25}>
-          <Typography variant="h6" fontWeight={900}>{editing.type === 'teachers' ? d.editPublicTeacher : d.createPublicTeacher}</Typography>
+      {cmsTab === 'teachers' && <Grid container spacing={3} className="cmsContentGrid">
+        <Grid item xs={12} lg={6}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('teachers', teacherForm) }}><Stack spacing={2.25}>
+          <Typography variant="h6" fontWeight={900}>Content editor</Typography>
+          <Typography color="text.secondary">{formTitleMap.teachers}</Typography>
           {localeField(teacherForm, setTeacherForm)}
           <TextField required label={d.name} value={teacherForm.name} onChange={(e) => setTeacherForm({ ...teacherForm, name: e.target.value })} />
           <TextField required label={d.publicRole} value={teacherForm.role} onChange={(e) => setTeacherForm({ ...teacherForm, role: e.target.value })} />
@@ -498,12 +508,13 @@ function PublicContentAdmin({ setMessage, locale }) {
           {publishField(teacherForm, setTeacherForm)}
           <Stack direction="row" spacing={1}><Button type="submit" variant="contained">{d.saveTeacherProfile}</Button><Button onClick={resetForms}>{d.clear}</Button></Stack>
         </Stack></Box></Grid>
-        <Grid item xs={12} md={7}>{renderCmsList(currentList, 'teachers')}</Grid>
+        <Grid item xs={12} lg={6}>{renderCmsList(currentList, 'teachers')}</Grid>
       </Grid>}
 
-      {cmsTab === 'testimonials' && <Grid container spacing={3}>
-        <Grid item xs={12} md={5}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('testimonials', testimonialForm) }}><Stack spacing={2.25}>
-          <Typography variant="h6" fontWeight={900}>{editing.type === 'testimonials' ? d.editTestimonial : d.createTestimonial}</Typography>
+      {cmsTab === 'testimonials' && <Grid container spacing={3} className="cmsContentGrid">
+        <Grid item xs={12} lg={6}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('testimonials', testimonialForm) }}><Stack spacing={2.25}>
+          <Typography variant="h6" fontWeight={900}>Content editor</Typography>
+          <Typography color="text.secondary">{formTitleMap.testimonials}</Typography>
           {localeField(testimonialForm, setTestimonialForm)}
           <TextField required label={d.studentLabel} value={testimonialForm.student} onChange={(e) => setTestimonialForm({ ...testimonialForm, student: e.target.value })} />
           {imageField(testimonialForm, setTestimonialForm)}
@@ -512,12 +523,13 @@ function PublicContentAdmin({ setMessage, locale }) {
           {publishField(testimonialForm, setTestimonialForm)}
           <Stack direction="row" spacing={1}><Button type="submit" variant="contained">{d.saveTestimonial}</Button><Button onClick={resetForms}>{d.clear}</Button></Stack>
         </Stack></Box></Grid>
-        <Grid item xs={12} md={7}>{renderCmsList(currentList, 'testimonials')}</Grid>
+        <Grid item xs={12} lg={6}>{renderCmsList(currentList, 'testimonials')}</Grid>
       </Grid>}
 
-      {cmsTab === 'posts' && <Grid container spacing={3}>
-        <Grid item xs={12} md={5}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('posts', postForm) }}><Stack spacing={2.25}>
-          <Typography variant="h6" fontWeight={900}>{editing.type === 'posts' ? d.editBlogPost : d.createBlogPost}</Typography>
+      {cmsTab === 'posts' && <Grid container spacing={3} className="cmsContentGrid">
+        <Grid item xs={12} lg={6}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('posts', postForm) }}><Stack spacing={2.25}>
+          <Typography variant="h6" fontWeight={900}>Content editor</Typography>
+          <Typography color="text.secondary">{formTitleMap.posts}</Typography>
           {localeField(postForm, setPostForm)}
           <TextField required label={d.slug} helperText={d.slugHelp} value={postForm.slug} onChange={(e) => setPostForm({ ...postForm, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') })} />
           <TextField required label={d.title} value={postForm.title} onChange={(e) => setPostForm({ ...postForm, title: e.target.value })} />
@@ -528,16 +540,18 @@ function PublicContentAdmin({ setMessage, locale }) {
           {publishField(postForm, setPostForm)}
           <Stack direction="row" spacing={1}><Button type="submit" variant="contained">{d.saveBlogPost}</Button><Button onClick={resetForms}>{d.clear}</Button></Stack>
         </Stack></Box></Grid>
-        <Grid item xs={12} md={7}>{renderCmsList(currentList, 'posts')}</Grid>
+        <Grid item xs={12} lg={6}>{renderCmsList(currentList, 'posts')}</Grid>
       </Grid>}
     </CardContent></Card>
   )
 
   function renderCmsList(items, type) {
-    return <Stack spacing={2}>{items.map((item) => <Paper className="listRow" key={`${type}-${item.id}`}><Stack spacing={1}>
+    return <Stack spacing={2}>
+      <Typography variant="h6" fontWeight={900}>Existing content</Typography>
+      {items.map((item) => <Paper className="listRow cmsListRow" key={`${type}-${item.id}`}><Stack spacing={1.25}>
       <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={1}>
         <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
-          {item.image_url && <img className="cmsThumb" src={item.image_url.startsWith('/media') ? `${API_URL}${item.image_url}` : item.image_url} alt={item.image_alt || item.title || item.name || item.student || 'Homepage hero'} />}
+          <CmsThumb src={item.image_url ? (item.image_url.startsWith('/media') ? `${API_URL}${item.image_url}` : item.image_url) : ''} alt={item.image_alt || item.title || item.name || item.student || 'CMS image'} />
           <Box>
             <Typography fontWeight={900}>{item.title || item.name || item.student || item.eyebrow || 'Homepage hero'}</Typography>
             <Typography color="text.secondary">{item.role || item.level || item.read_time || item.result || item.card_title || item.subtitle}</Typography>
@@ -560,8 +574,15 @@ function PublicContentAdmin({ setMessage, locale }) {
         }}>{d.edit}</Button>
         <Button size="small" color="error" onClick={() => deleteItem(type, item.id)}>{d.delete}</Button>
       </Stack>
-    </Stack></Paper>)}</Stack>
+    </Stack></Paper>)}
+    </Stack>
   }
+}
+
+function CmsThumb({ src, alt }) {
+  const [failed, setFailed] = useState(false)
+  if (!src || failed) return <Box className="cmsThumb cmsThumbFallback" aria-hidden="true">No image</Box>
+  return <img className="cmsThumb" src={src} alt={alt} onError={() => setFailed(true)} />
 }
 
 function AdminDashboard({ setMessage, refreshCounters, locale }) {
@@ -589,10 +610,10 @@ function AdminDashboard({ setMessage, refreshCounters, locale }) {
 
   return (
     <Grid container spacing={3}>
-      <Grid item xs={12} md={3}><StatCard title={d.adminStats.teachers} value={teachers.length} icon={<SchoolIcon />} /></Grid>
-      <Grid item xs={12} md={3}><StatCard title={d.adminStats.students} value={students.length} icon={<FamilyRestroomIcon />} /></Grid>
-      <Grid item xs={12} md={3}><StatCard title={d.adminStats.feedbackRecords} value={records.length} icon={<DashboardIcon />} /></Grid>
-      <Grid item xs={12} md={3}><StatCard title={d.adminStats.aiAdviceSaved} value={records.filter((r) => r.ai_advice_generated_at).length} icon={<CheckCircleIcon />} /></Grid>
+      <Grid item xs={12} sm={6} lg={3}><StatCard title={d.adminStats.teachers} value={teachers.length} icon={<SchoolIcon />} /></Grid>
+      <Grid item xs={12} sm={6} lg={3}><StatCard title={d.adminStats.students} value={students.length} icon={<FamilyRestroomIcon />} /></Grid>
+      <Grid item xs={12} sm={6} lg={3}><StatCard title={d.adminStats.feedbackRecords} value={records.length} icon={<DashboardIcon />} /></Grid>
+      <Grid item xs={12} sm={6} lg={3}><StatCard title={d.adminStats.aiAdviceSaved} value={records.filter((r) => r.ai_advice_generated_at).length} icon={<CheckCircleIcon />} /></Grid>
 
       <Grid item xs={12} lg={4}>
         <Card><CardContent>
