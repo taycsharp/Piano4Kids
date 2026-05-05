@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+import re
 import httpx
 
 from .config import settings
@@ -6,10 +7,15 @@ from .models import AdviceRecord
 
 
 def _prompt(record: AdviceRecord) -> str:
+    language_hint = _dominant_language_hint(record.teacher_feedback)
     return f"""
 You are a piano education assistant for parents.
 Use only the teacher feedback below. Do not invent musical problems.
 Tone: warm, practical, encouraging, not stressful.
+Language rule: {language_hint}
+
+Keep the response short and parent-friendly. Avoid academic wording.
+If details are missing in teacher feedback, say it simply instead of inventing.
 
 Student: {record.student.name}
 Age: {record.student.age or 'Unknown'}
@@ -21,11 +27,20 @@ Teacher feedback:
 
 Write parent advice in this format:
 1. Short summary
-2. What the child did well
-3. Practice focus this week
-4. Parent action at home
-5. Encouraging sentence to say to the child
+2. What parent should encourage at home
+3. Simple practice suggestion this week
+4. Positive sentence for the child
 """.strip()
+
+
+def _dominant_language_hint(text: str) -> str:
+    vietnamese_chars = len(re.findall(r"[ăâđêôơưĂÂĐÊÔƠƯáàảãạấầẩẫậắằẳẵặéèẻẽẹếềểễệíìỉĩịóòỏõọốồổỗộớờởỡợúùủũụứừửữựýỳỷỹỵ]", text))
+    latin_words = len(re.findall(r"[A-Za-z]+", text))
+    if vietnamese_chars > 0 and vietnamese_chars >= max(2, latin_words // 3):
+        return "If teacher feedback is mostly Vietnamese, write all advice in Vietnamese for parents."
+    if vietnamese_chars > 0:
+        return "The teacher feedback is mixed Vietnamese/English. Write advice in the dominant language used in the teacher feedback."
+    return "If teacher feedback is mostly English, write all advice in English for parents."
 
 
 async def check_ollama_status() -> dict:

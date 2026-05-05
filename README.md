@@ -239,6 +239,23 @@ Admins can also delete photos directly from the media library grid. The backend 
 
 The delete endpoint accepts only local `/media/...` image URLs and prevents path traversal.
 
+
+## AI advice language behavior (English + Vietnamese)
+
+The Ollama advice prompt supports teacher feedback in English, Vietnamese, or mixed text:
+
+- If teacher feedback is mostly Vietnamese, AI advice is generated in Vietnamese.
+- If teacher feedback is mostly English, AI advice is generated in English.
+- If teacher feedback is mixed, advice follows the dominant language in the teacher comment.
+
+Vietnamese teacher-comment example:
+
+```text
+"Minh đã chơi tốt hơn bài luyện ngón, nhưng cần giữ nhịp đều hơn và luyện tay trái chậm lại."
+```
+
+Expected behavior: generated parent advice is simple, warm, and practical in Vietnamese.
+
 ## Frontend organization notes
 
 To keep the dashboard refactor clean without changing behavior, shared frontend utilities/components are being moved into clearer folders:
