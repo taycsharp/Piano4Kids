@@ -29,11 +29,24 @@ Output requirements:
 - Return plain text only (no markdown, no **bold**, no headings in another language).
 - Keep each line short and clear for parents.
 
-Write exactly 4 numbered lines in the same language as the teacher feedback:
-1. Short summary
-2. What parent should encourage at home
-3. Simple practice suggestion this week
-4. Positive sentence for the child
+Write exactly 4 short labeled lines in the same language as the teacher feedback.
+Do not use markdown symbols, bullets, or numbering.
+
+If Vietnamese:
+Tóm tắt: ...
+Phụ huynh nên khuyến khích: ...
+Gợi ý luyện tập tại nhà: ...
+Lời động viên cho bé: ...
+
+If English:
+Summary: ...
+Parent encouragement: ...
+Home practice suggestion: ...
+Positive sentence for the child: ...
+
+Length target:
+- Vietnamese total about 80-140 words
+- English total about 60-120 words
 """.strip()
 
 
@@ -96,20 +109,42 @@ async def generate_parent_advice_once(record: AdviceRecord) -> str:
 
 def _normalize_advice(advice: str, teacher_feedback: str) -> str:
     text = advice.replace("**", "").strip()
+    text = re.sub(r"^[\-•*]\s*", "", text, flags=re.MULTILINE)
     lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
     if len(lines) == 1:
         parts = re.split(r"\s(?=\d+[\).])", lines[0])
         if len(parts) > 1:
             lines = [p.strip() for p in parts if p.strip()]
 
-    lang = _dominant_language_hint(teacher_feedback)
-    mapped = []
-    for i, ln in enumerate(lines[:4], start=1):
-        content = re.sub(r"^\d+[\).]\s*", "", ln)
-        content = re.sub(r"^(Short Summary|What Parent Should Encourage At Home|Simple Practice Suggestion This Week|Positive Sentence For The Child)\s*:\s*", "", content, flags=re.IGNORECASE)
-        mapped.append(f"{i}. {content}")
+    is_vi = "Vietnamese" in _dominant_language_hint(teacher_feedback)
+    labels = [
+        "Tóm tắt",
+        "Phụ huynh nên khuyến khích",
+        "Gợi ý luyện tập tại nhà",
+        "Lời động viên cho bé",
+    ] if is_vi else [
+        "Summary",
+        "Parent encouragement",
+        "Home practice suggestion",
+        "Positive sentence for the child",
+    ]
 
-    return "\n".join(mapped) if mapped else text
+    cleaned_items = []
+    for ln in lines:
+        content = re.sub(r"^\d+[\).]\s*", "", ln)
+        content = re.sub(r"^(Short Summary|Summary|What Parent Should Encourage At Home|Parent encouragement|Simple Practice Suggestion This Week|Home practice suggestion|Practice suggestion this week|Positive Sentence For The Child|Positive sentence for the child|Tóm tắt|Phụ huynh nên khuyến khích|Gợi ý luyện tập (tuần này|tại nhà)|Lời động viên cho bé)\s*:\s*", "", content, flags=re.IGNORECASE)
+        if content:
+            cleaned_items.append(content)
+
+    if not cleaned_items:
+        return text
+
+    out=[]
+    for idx,label in enumerate(labels):
+        value = cleaned_items[idx] if idx < len(cleaned_items) else ""
+        if value:
+            out.append(f"{label}: {value}")
+    return "\n".join(out).strip()
 
 
 def mark_advice_generated(record: AdviceRecord, advice: str) -> None:

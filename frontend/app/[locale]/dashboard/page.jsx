@@ -773,7 +773,7 @@ function TeacherDashboard({ setMessage, refreshCounters, locale }) {
                     <Chip color={r.ai_advice_generated_at ? 'success' : 'warning'} label={r.ai_advice_generated_at ? d.aiAdviceSavedChip : d.waitingForAI} />
                   </Stack>
                   <Typography><b>{d.teacherFeedback}:</b> {r.teacher_feedback}</Typography>
-                  {r.ai_parent_advice && <Alert severity="success"><b>{d.parentAdvice}:</b><br />{r.ai_parent_advice}</Alert>}
+                  {r.ai_parent_advice && <Alert severity="success" sx={{ whiteSpace: 'pre-line' }}><b>{d.parentAdvice}:</b><br />{r.ai_parent_advice}</Alert>}
                   {loadingId === r.id && <LinearProgress />}
                   <Button variant="contained" startIcon={<AutoAwesomeIcon />} disabled={Boolean(r.ai_advice_generated_at) || loadingId === r.id} onClick={() => generateAdvice(r.id)}>
                     {r.ai_advice_generated_at ? d.aiAlreadyGenerated : d.generateAIOnce}
@@ -837,7 +837,7 @@ function ParentDashboard({ setMessage, locale }) {
                   </Stack>
                   <Divider />
                   <Typography><b>{d.teacherFeedback}:</b> {r.teacher_feedback}</Typography>
-                  <Alert severity="success"><b>{d.aiAdviceForParent}:</b><br />{r.ai_parent_advice}</Alert>
+                  <Alert severity="success" sx={{ whiteSpace: 'pre-line' }}><b>{d.aiAdviceForParent}:</b><br />{r.ai_parent_advice}</Alert>
                 </Stack>
               </Paper>
             ))}
