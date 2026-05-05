@@ -80,6 +80,7 @@ const dashboardTexts = {
     editTestimonial: 'Edit testimonial', createTestimonial: 'Create testimonial', studentLabel: 'Student label', result: 'Result', parentQuote: 'Parent quote', saveTestimonial: 'Save testimonial',
     editHomepage: 'Edit homepage hero', createHomepage: 'Create homepage hero', eyebrow: 'Eyebrow text', heroTitleField: 'Hero title', heroSubtitleField: 'Hero subtitle', primaryButtonText: 'Primary button text', primaryButtonHref: 'Primary button link', secondaryButtonText: 'Secondary button text', secondaryButtonHref: 'Secondary button link', cardTitle: 'Hero card title', cardText: 'Hero card text', stat1Value: 'Stat 1 value', stat1Label: 'Stat 1 label', stat2Value: 'Stat 2 value', stat2Label: 'Stat 2 label', stat3Value: 'Stat 3 value', stat3Label: 'Stat 3 label', saveHomepage: 'Save homepage hero', editBlogPost: 'Edit blog post', createBlogPost: 'Create blog post', slug: 'Slug', slugHelp: 'Example: how-to-practice-piano', title: 'Title', excerpt: 'Excerpt', readTime: 'Read time', content: 'Content, separate paragraphs with blank lines', saveBlogPost: 'Save blog post',
     edit: 'Edit', delete: 'Delete', cmsSaved: 'Public content saved. Refresh the public page to see updates.', cmsDeleted: 'Public content deleted.',
+    noContentYet: 'No saved content in this section yet. Create your first item from the editor.',
     adminStats: { teachers: 'Teachers', students: 'Students', feedbackRecords: 'Feedback records', aiAdviceSaved: 'AI advice saved' },
     createTeacher: 'Create teacher', createTeacherSub: 'Admin creates teacher login accounts.', teacherName: 'Teacher name', teacherEmail: 'Teacher email', specialty: 'Specialty', initialPassword: 'Initial password', createTeacherAccount: 'Create teacher account', teacherCreated: 'Teacher account created', defaultPassword: 'Default password',
     overview: 'Academy overview', overviewSub: 'All teachers, students, and saved advice records.', noSpecialty: 'No specialty',
@@ -108,6 +109,7 @@ const dashboardTexts = {
     editTestimonial: 'Sửa cảm nhận', createTestimonial: 'Tạo cảm nhận', studentLabel: 'Thông tin học viên', result: 'Kết quả', parentQuote: 'Chia sẻ phụ huynh', saveTestimonial: 'Lưu cảm nhận',
     editHomepage: 'Sửa hero trang chủ', createHomepage: 'Tạo hero trang chủ', eyebrow: 'Dòng giới thiệu nhỏ', heroTitleField: 'Tiêu đề hero', heroSubtitleField: 'Mô tả hero', primaryButtonText: 'Nút chính', primaryButtonHref: 'Link nút chính', secondaryButtonText: 'Nút phụ', secondaryButtonHref: 'Link nút phụ', cardTitle: 'Tiêu đề thẻ hero', cardText: 'Nội dung thẻ hero', stat1Value: 'Chỉ số 1', stat1Label: 'Nhãn chỉ số 1', stat2Value: 'Chỉ số 2', stat2Label: 'Nhãn chỉ số 2', stat3Value: 'Chỉ số 3', stat3Label: 'Nhãn chỉ số 3', saveHomepage: 'Lưu hero trang chủ', editBlogPost: 'Sửa bài viết', createBlogPost: 'Tạo bài viết', slug: 'Đường dẫn slug', slugHelp: 'Ví dụ: cach-luyen-tap-piano', title: 'Tiêu đề', excerpt: 'Tóm tắt', readTime: 'Thời gian đọc', content: 'Nội dung, cách đoạn bằng dòng trống', saveBlogPost: 'Lưu bài viết',
     edit: 'Sửa', delete: 'Xóa', cmsSaved: 'Nội dung công khai đã được lưu. Tải lại trang công khai để xem cập nhật.', cmsDeleted: 'Nội dung công khai đã được xóa.',
+    noContentYet: 'Mục này chưa có nội dung đã lưu. Hãy tạo nội dung đầu tiên từ khung biên tập.',
     adminStats: { teachers: 'Giáo viên', students: 'Học viên', feedbackRecords: 'Bản ghi phản hồi', aiAdviceSaved: 'Lời khuyên AI đã lưu' },
     createTeacher: 'Tạo giáo viên', createTeacherSub: 'Admin tạo tài khoản đăng nhập cho giáo viên.', teacherName: 'Tên giáo viên', teacherEmail: 'Email giáo viên', specialty: 'Chuyên môn', initialPassword: 'Mật khẩu ban đầu', createTeacherAccount: 'Tạo tài khoản giáo viên', teacherCreated: 'Đã tạo tài khoản giáo viên', defaultPassword: 'Mật khẩu mặc định',
     overview: 'Tổng quan học viện', overviewSub: 'Tất cả giáo viên, học viên và bản ghi lời khuyên đã lưu.', noSpecialty: 'Chưa có chuyên môn',
@@ -449,7 +451,7 @@ function PublicContentAdmin({ setMessage, locale }) {
   return (
     <Card className="cmsAdminCard" sx={{ mt: 3 }}><CardContent>
       <SectionHeader icon={<AdminPanelSettingsIcon />} title={d.publicCms} subtitle={d.publicCmsSub} />
-      <Tabs value={cmsTab} onChange={(_, v) => { setCmsTab(v); resetForms() }} sx={{ mb: 3 }} variant="scrollable">
+      <Tabs value={cmsTab} onChange={(_, v) => { setCmsTab(v); resetForms() }} sx={{ mb: 3 }} variant="scrollable" allowScrollButtonsMobile>
         <Tab value="homepage" label={d.tabs.homepage} />
         <Tab value="courses" label={d.tabs.courses} />
         <Tab value="teachers" label={d.tabs.publicTeachers} />
@@ -458,7 +460,7 @@ function PublicContentAdmin({ setMessage, locale }) {
       </Tabs>
 
       {cmsTab === 'homepage' && <Grid container spacing={3} className="cmsContentGrid">
-        <Grid item xs={12} lg={6}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('homepage', heroForm) }}><Stack spacing={2.25}>
+        <Grid item xs={12} xl={5}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('homepage', heroForm) }}><Stack spacing={2.25}>
           <Typography variant="h6" fontWeight={900}>Content editor</Typography>
           <Typography color="text.secondary">{formTitleMap.homepage}</Typography>
           {localeField(heroForm, setHeroForm)}
@@ -476,11 +478,11 @@ function PublicContentAdmin({ setMessage, locale }) {
           {publishField(heroForm, setHeroForm)}
           <Stack direction="row" spacing={1}><Button type="submit" variant="contained">{d.saveHomepage}</Button><Button onClick={resetForms}>{d.clear}</Button></Stack>
         </Stack></Box></Grid>
-        <Grid item xs={12} lg={6}>{renderCmsList(currentList, 'homepage')}</Grid>
+        <Grid item xs={12} xl={7}>{renderCmsList(currentList, 'homepage')}</Grid>
       </Grid>}
 
       {cmsTab === 'courses' && <Grid container spacing={3} className="cmsContentGrid">
-        <Grid item xs={12} lg={6}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('courses', courseForm) }}><Stack spacing={2.25}>
+        <Grid item xs={12} xl={5}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('courses', courseForm) }}><Stack spacing={2.25}>
           <Typography variant="h6" fontWeight={900}>Content editor</Typography>
           <Typography color="text.secondary">{formTitleMap.courses}</Typography>
           {localeField(courseForm, setCourseForm)}
@@ -492,11 +494,11 @@ function PublicContentAdmin({ setMessage, locale }) {
           {publishField(courseForm, setCourseForm)}
           <Stack direction="row" spacing={1}><Button type="submit" variant="contained">{d.saveCourse}</Button><Button onClick={resetForms}>{d.clear}</Button></Stack>
         </Stack></Box></Grid>
-        <Grid item xs={12} lg={6}>{renderCmsList(currentList, 'courses')}</Grid>
+        <Grid item xs={12} xl={7}>{renderCmsList(currentList, 'courses')}</Grid>
       </Grid>}
 
       {cmsTab === 'teachers' && <Grid container spacing={3} className="cmsContentGrid">
-        <Grid item xs={12} lg={6}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('teachers', teacherForm) }}><Stack spacing={2.25}>
+        <Grid item xs={12} xl={5}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('teachers', teacherForm) }}><Stack spacing={2.25}>
           <Typography variant="h6" fontWeight={900}>Content editor</Typography>
           <Typography color="text.secondary">{formTitleMap.teachers}</Typography>
           {localeField(teacherForm, setTeacherForm)}
@@ -508,11 +510,11 @@ function PublicContentAdmin({ setMessage, locale }) {
           {publishField(teacherForm, setTeacherForm)}
           <Stack direction="row" spacing={1}><Button type="submit" variant="contained">{d.saveTeacherProfile}</Button><Button onClick={resetForms}>{d.clear}</Button></Stack>
         </Stack></Box></Grid>
-        <Grid item xs={12} lg={6}>{renderCmsList(currentList, 'teachers')}</Grid>
+        <Grid item xs={12} xl={7}>{renderCmsList(currentList, 'teachers')}</Grid>
       </Grid>}
 
       {cmsTab === 'testimonials' && <Grid container spacing={3} className="cmsContentGrid">
-        <Grid item xs={12} lg={6}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('testimonials', testimonialForm) }}><Stack spacing={2.25}>
+        <Grid item xs={12} xl={5}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('testimonials', testimonialForm) }}><Stack spacing={2.25}>
           <Typography variant="h6" fontWeight={900}>Content editor</Typography>
           <Typography color="text.secondary">{formTitleMap.testimonials}</Typography>
           {localeField(testimonialForm, setTestimonialForm)}
@@ -523,11 +525,11 @@ function PublicContentAdmin({ setMessage, locale }) {
           {publishField(testimonialForm, setTestimonialForm)}
           <Stack direction="row" spacing={1}><Button type="submit" variant="contained">{d.saveTestimonial}</Button><Button onClick={resetForms}>{d.clear}</Button></Stack>
         </Stack></Box></Grid>
-        <Grid item xs={12} lg={6}>{renderCmsList(currentList, 'testimonials')}</Grid>
+        <Grid item xs={12} xl={7}>{renderCmsList(currentList, 'testimonials')}</Grid>
       </Grid>}
 
       {cmsTab === 'posts' && <Grid container spacing={3} className="cmsContentGrid">
-        <Grid item xs={12} lg={6}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('posts', postForm) }}><Stack spacing={2.25}>
+        <Grid item xs={12} xl={5}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('posts', postForm) }}><Stack spacing={2.25}>
           <Typography variant="h6" fontWeight={900}>Content editor</Typography>
           <Typography color="text.secondary">{formTitleMap.posts}</Typography>
           {localeField(postForm, setPostForm)}
@@ -540,7 +542,7 @@ function PublicContentAdmin({ setMessage, locale }) {
           {publishField(postForm, setPostForm)}
           <Stack direction="row" spacing={1}><Button type="submit" variant="contained">{d.saveBlogPost}</Button><Button onClick={resetForms}>{d.clear}</Button></Stack>
         </Stack></Box></Grid>
-        <Grid item xs={12} lg={6}>{renderCmsList(currentList, 'posts')}</Grid>
+        <Grid item xs={12} xl={7}>{renderCmsList(currentList, 'posts')}</Grid>
       </Grid>}
     </CardContent></Card>
   )
@@ -548,6 +550,12 @@ function PublicContentAdmin({ setMessage, locale }) {
   function renderCmsList(items, type) {
     return <Stack spacing={2}>
       <Typography variant="h6" fontWeight={900}>Existing content</Typography>
+      {!items.length && (
+        <Paper className="listRow cmsEmptyState">
+          <Typography variant="subtitle1" fontWeight={800}>Ready for preview</Typography>
+          <Typography color="text.secondary">{d.noContentYet}</Typography>
+        </Paper>
+      )}
       {items.map((item) => <Paper className="listRow cmsListRow" key={`${type}-${item.id}`}><Stack spacing={1.25}>
       <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={1}>
         <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>

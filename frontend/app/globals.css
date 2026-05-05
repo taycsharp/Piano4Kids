@@ -74,6 +74,16 @@ body { font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe 
   border: 1px solid rgba(21,87,176,0.12);
   box-shadow: 0 10px 20px rgba(21,87,176,0.06);
 }
+.cmsEmptyState {
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 18px;
+  border: 1px dashed rgba(21,87,176,0.25);
+  background: linear-gradient(180deg, rgba(248,251,255,0.85), #fff);
+}
 .parentRecord { background: linear-gradient(180deg, #fff, #f8fbff); }
 .publicSeoPanel {
   padding: 22px;
