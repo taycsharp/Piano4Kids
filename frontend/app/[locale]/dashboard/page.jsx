@@ -617,7 +617,7 @@ function AdminDashboard({ setMessage, refreshCounters, locale }) {
   }
 
   return (
-    <Grid container spacing={3}>
+    <Grid container spacing={3} className="dashboardStatsGrid">
       <Grid item xs={12} sm={6} lg={3}><StatCard title={d.adminStats.teachers} value={teachers.length} icon={<SchoolIcon />} /></Grid>
       <Grid item xs={12} sm={6} lg={3}><StatCard title={d.adminStats.students} value={students.length} icon={<FamilyRestroomIcon />} /></Grid>
       <Grid item xs={12} sm={6} lg={3}><StatCard title={d.adminStats.feedbackRecords} value={records.length} icon={<DashboardIcon />} /></Grid>
@@ -713,7 +713,7 @@ function TeacherDashboard({ setMessage, refreshCounters, locale }) {
   }
 
   return (
-    <Grid container spacing={3}>
+    <Grid container spacing={3} className="dashboardStatsGrid">
       <Grid item xs={12} md={3}><StatCard title={d.myStudents} value={students.length} icon={<FamilyRestroomIcon />} /></Grid>
       <Grid item xs={12} md={3}><StatCard title={d.adminStats.feedbackRecords} value={records.length} icon={<DashboardIcon />} /></Grid>
       <Grid item xs={12} md={3}><StatCard title={d.aiSaved} value={records.filter((r) => r.ai_advice_generated_at).length} icon={<AutoAwesomeIcon />} /></Grid>
@@ -799,7 +799,7 @@ function ParentDashboard({ setMessage, locale }) {
   }, [])
 
   return (
-    <Grid container spacing={3}>
+    <Grid container spacing={3} className="dashboardStatsGrid">
       <Grid item xs={12} md={4}><StatCard title={d.myChildren} value={students.length} icon={<FamilyRestroomIcon />} /></Grid>
       <Grid item xs={12} md={4}><StatCard title={d.parentTeacherFeedback} value={records.length} icon={<DashboardIcon />} /></Grid>
       <Grid item xs={12} md={4}><StatCard title={d.aiAdviceSavedStat} value={records.filter((r) => r.ai_parent_advice).length} icon={<CheckCircleIcon />} /></Grid>
