@@ -627,35 +627,39 @@ function AdminDashboard({ setMessage, refreshCounters, locale }) {
         </Grid>
       </Grid>
 
-      <Grid item xs={12} lg={8} className="adminOverviewCol">
-        <Card><CardContent>
-          <SectionHeader icon={<AdminPanelSettingsIcon />} title={d.overview} subtitle={d.overviewSub} />
-          <Stack spacing={2}>
-            {teachers.map((t) => (
-              <Paper key={t.id} className="listRow">
-                <Stack direction="row" justifyContent="space-between" alignItems="center">
-                  <Box><Typography fontWeight={900}>{t.name}</Typography><Typography color="text.secondary">{t.email} · {t.specialty || d.noSpecialty}</Typography></Box>
-                  <Chip label={`${students.filter((s) => s.teacher_id === t.id).length} ${d.students}`} />
-                </Stack>
-              </Paper>
-            ))}
-          </Stack>
-        </CardContent></Card>
-      </Grid>
+      <Grid item xs={12}>
+        <Grid container spacing={2.5} className="adminMainGrid">
+          <Grid item xs={12} lg={8} className="adminOverviewCol">
+            <Card><CardContent>
+              <SectionHeader icon={<AdminPanelSettingsIcon />} title={d.overview} subtitle={d.overviewSub} />
+              <Stack spacing={2}>
+                {teachers.map((t) => (
+                  <Paper key={t.id} className="listRow">
+                    <Stack direction="row" justifyContent="space-between" alignItems="center">
+                      <Box><Typography fontWeight={900}>{t.name}</Typography><Typography color="text.secondary">{t.email} · {t.specialty || d.noSpecialty}</Typography></Box>
+                      <Chip label={`${students.filter((s) => s.teacher_id === t.id).length} ${d.students}`} />
+                    </Stack>
+                  </Paper>
+                ))}
+              </Stack>
+            </CardContent></Card>
+          </Grid>
 
-      <Grid item xs={12} lg={4} className="adminTeacherFormCol">
-        <Card><CardContent>
-          <SectionHeader icon={<PersonAddIcon />} title={d.createTeacher} subtitle={d.createTeacherSub} />
-          <Box component="form" onSubmit={createTeacher}>
-            <Stack spacing={2}>
-              <TextField required label={d.teacherName} value={teacherForm.name} onChange={(e) => setTeacherForm({ ...teacherForm, name: e.target.value })} />
-              <TextField required type="email" label={d.teacherEmail} value={teacherForm.email} onChange={(e) => setTeacherForm({ ...teacherForm, email: e.target.value })} />
-              <TextField label={d.specialty} value={teacherForm.specialty} onChange={(e) => setTeacherForm({ ...teacherForm, specialty: e.target.value })} />
-              <TextField required label={d.initialPassword} value={teacherForm.password} onChange={(e) => setTeacherForm({ ...teacherForm, password: e.target.value })} />
-              <Button type="submit" variant="contained" size="large">{d.createTeacherAccount}</Button>
-            </Stack>
-          </Box>
-        </CardContent></Card>
+          <Grid item xs={12} lg={4} className="adminTeacherFormCol">
+            <Card><CardContent>
+              <SectionHeader icon={<PersonAddIcon />} title={d.createTeacher} subtitle={d.createTeacherSub} />
+              <Box component="form" onSubmit={createTeacher}>
+                <Stack spacing={2}>
+                  <TextField required label={d.teacherName} value={teacherForm.name} onChange={(e) => setTeacherForm({ ...teacherForm, name: e.target.value })} />
+                  <TextField required type="email" label={d.teacherEmail} value={teacherForm.email} onChange={(e) => setTeacherForm({ ...teacherForm, email: e.target.value })} />
+                  <TextField label={d.specialty} value={teacherForm.specialty} onChange={(e) => setTeacherForm({ ...teacherForm, specialty: e.target.value })} />
+                  <TextField required label={d.initialPassword} value={teacherForm.password} onChange={(e) => setTeacherForm({ ...teacherForm, password: e.target.value })} />
+                  <Button type="submit" variant="contained" size="large">{d.createTeacherAccount}</Button>
+                </Stack>
+              </Box>
+            </CardContent></Card>
+          </Grid>
+        </Grid>
       </Grid>
 
       <Grid item xs={12}>

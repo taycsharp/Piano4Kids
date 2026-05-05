@@ -646,10 +646,6 @@ a { color: inherit; text-decoration: none; }
   align-items: start;
 }
 
-.dashboardStatsGrid .MuiGrid-item {
-  display: flex;
-}
-
 .dashboardStatsGrid .statCard {
   width: 100%;
 }
@@ -660,18 +656,36 @@ a { color: inherit; text-decoration: none; }
   box-shadow: 0 10px 24px rgba(31,44,71,0.06);
 }
 
-.adminStatsGrid .MuiGrid-item {
-  display: flex;
+.adminStatsGrid {
+  margin-bottom: 2px;
+}
+
+.adminStatsGrid .statCard {
+  height: 100%;
 }
 
 .adminStatsGrid .statCard .MuiCardContent-root {
-  min-height: 116px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  min-height: 108px;
+  display: grid;
+  align-content: space-between;
+  gap: 8px;
   padding: 14px 16px !important;
 }
 
+
+.adminMainGrid {
+  align-items: start;
+}
+
+.adminOverviewCol,
+.adminTeacherFormCol {
+  display: flex;
+}
+
+.adminOverviewCol .MuiCard-root,
+.adminTeacherFormCol .MuiCard-root {
+  width: 100%;
+}
 .adminOverviewCol .MuiCardContent-root,
 .adminTeacherFormCol .MuiCardContent-root {
   padding: 20px !important;
@@ -682,6 +696,10 @@ a { color: inherit; text-decoration: none; }
 }
 
 @media (max-width: 1200px) {
+  .adminStatsGrid {
+    row-gap: 8px;
+  }
+
   .cmsFormPanel {
     position: static;
     top: auto;
