@@ -617,28 +617,17 @@ function AdminDashboard({ setMessage, refreshCounters, locale }) {
   }
 
   return (
-    <Grid container spacing={3} className="dashboardStatsGrid">
-      <Grid item xs={12} sm={6} lg={3}><StatCard title={d.adminStats.teachers} value={teachers.length} icon={<SchoolIcon />} /></Grid>
-      <Grid item xs={12} sm={6} lg={3}><StatCard title={d.adminStats.students} value={students.length} icon={<FamilyRestroomIcon />} /></Grid>
-      <Grid item xs={12} sm={6} lg={3}><StatCard title={d.adminStats.feedbackRecords} value={records.length} icon={<DashboardIcon />} /></Grid>
-      <Grid item xs={12} sm={6} lg={3}><StatCard title={d.adminStats.aiAdviceSaved} value={records.filter((r) => r.ai_advice_generated_at).length} icon={<CheckCircleIcon />} /></Grid>
-
-      <Grid item xs={12} lg={4}>
-        <Card><CardContent>
-          <SectionHeader icon={<PersonAddIcon />} title={d.createTeacher} subtitle={d.createTeacherSub} />
-          <Box component="form" onSubmit={createTeacher}>
-            <Stack spacing={2}>
-              <TextField required label={d.teacherName} value={teacherForm.name} onChange={(e) => setTeacherForm({ ...teacherForm, name: e.target.value })} />
-              <TextField required type="email" label={d.teacherEmail} value={teacherForm.email} onChange={(e) => setTeacherForm({ ...teacherForm, email: e.target.value })} />
-              <TextField label={d.specialty} value={teacherForm.specialty} onChange={(e) => setTeacherForm({ ...teacherForm, specialty: e.target.value })} />
-              <TextField required label={d.initialPassword} value={teacherForm.password} onChange={(e) => setTeacherForm({ ...teacherForm, password: e.target.value })} />
-              <Button type="submit" variant="contained" size="large">{d.createTeacherAccount}</Button>
-            </Stack>
-          </Box>
-        </CardContent></Card>
+    <Grid container spacing={3} className="dashboardStatsGrid adminDashboardLayout">
+      <Grid item xs={12}>
+        <Grid container spacing={2.25} className="adminStatsGrid">
+          <Grid item xs={12} sm={6} lg={3}><StatCard title={d.adminStats.teachers} value={teachers.length} icon={<SchoolIcon />} /></Grid>
+          <Grid item xs={12} sm={6} lg={3}><StatCard title={d.adminStats.students} value={students.length} icon={<FamilyRestroomIcon />} /></Grid>
+          <Grid item xs={12} sm={6} lg={3}><StatCard title={d.adminStats.feedbackRecords} value={records.length} icon={<DashboardIcon />} /></Grid>
+          <Grid item xs={12} sm={6} lg={3}><StatCard title={d.adminStats.aiAdviceSaved} value={records.filter((r) => r.ai_advice_generated_at).length} icon={<CheckCircleIcon />} /></Grid>
+        </Grid>
       </Grid>
 
-      <Grid item xs={12} lg={8}>
+      <Grid item xs={12} lg={8} className="adminOverviewCol">
         <Card><CardContent>
           <SectionHeader icon={<AdminPanelSettingsIcon />} title={d.overview} subtitle={d.overviewSub} />
           <Stack spacing={2}>
@@ -653,6 +642,22 @@ function AdminDashboard({ setMessage, refreshCounters, locale }) {
           </Stack>
         </CardContent></Card>
       </Grid>
+
+      <Grid item xs={12} lg={4} className="adminTeacherFormCol">
+        <Card><CardContent>
+          <SectionHeader icon={<PersonAddIcon />} title={d.createTeacher} subtitle={d.createTeacherSub} />
+          <Box component="form" onSubmit={createTeacher}>
+            <Stack spacing={2}>
+              <TextField required label={d.teacherName} value={teacherForm.name} onChange={(e) => setTeacherForm({ ...teacherForm, name: e.target.value })} />
+              <TextField required type="email" label={d.teacherEmail} value={teacherForm.email} onChange={(e) => setTeacherForm({ ...teacherForm, email: e.target.value })} />
+              <TextField label={d.specialty} value={teacherForm.specialty} onChange={(e) => setTeacherForm({ ...teacherForm, specialty: e.target.value })} />
+              <TextField required label={d.initialPassword} value={teacherForm.password} onChange={(e) => setTeacherForm({ ...teacherForm, password: e.target.value })} />
+              <Button type="submit" variant="contained" size="large">{d.createTeacherAccount}</Button>
+            </Stack>
+          </Box>
+        </CardContent></Card>
+      </Grid>
+
       <Grid item xs={12}>
         <PublicContentAdmin setMessage={setMessage} locale={locale} />
       </Grid>

@@ -654,9 +654,41 @@ a { color: inherit; text-decoration: none; }
   width: 100%;
 }
 
+.adminDashboardLayout .MuiCard-root {
+  border-radius: 18px;
+  border: 1px solid rgba(21,87,176,0.1);
+  box-shadow: 0 10px 24px rgba(31,44,71,0.06);
+}
+
+.adminStatsGrid .MuiGrid-item {
+  display: flex;
+}
+
+.adminStatsGrid .statCard .MuiCardContent-root {
+  min-height: 116px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 14px 16px !important;
+}
+
+.adminOverviewCol .MuiCardContent-root,
+.adminTeacherFormCol .MuiCardContent-root {
+  padding: 20px !important;
+}
+
+.adminOverviewCol .listRow {
+  padding: 16px 18px;
+}
+
 @media (max-width: 1200px) {
   .cmsFormPanel {
     position: static;
     top: auto;
+  }
+
+  .adminOverviewCol,
+  .adminTeacherFormCol {
+    order: initial;
   }
 }
