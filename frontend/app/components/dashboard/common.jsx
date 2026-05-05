@@ -19,7 +19,7 @@ export function StatCard({ title, value, icon }) {
 
 export function SectionHeader({ icon, title, subtitle }) {
   return (
-    <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 2 }}>
+    <Stack direction="row" spacing={1.5} alignItems="center" className="sectionHeader">
       <Avatar className="sectionIcon">{icon}</Avatar>
       <Box>
         <Typography variant="h5" fontWeight={900}>{title}</Typography>

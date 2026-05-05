@@ -440,7 +440,7 @@ function PublicContentAdmin({ setMessage, locale }) {
   const currentList = cmsTab === 'homepage' ? heroes : cmsTab === 'courses' ? courses : cmsTab === 'teachers' ? publicTeachers : cmsTab === 'testimonials' ? testimonials : posts
 
   return (
-    <Card sx={{ mt: 3 }}><CardContent>
+    <Card className="cmsAdminCard" sx={{ mt: 3 }}><CardContent>
       <SectionHeader icon={<AdminPanelSettingsIcon />} title={d.publicCms} subtitle={d.publicCmsSub} />
       <Tabs value={cmsTab} onChange={(_, v) => { setCmsTab(v); resetForms() }} sx={{ mb: 3 }} variant="scrollable">
         <Tab value="homepage" label={d.tabs.homepage} />
@@ -451,7 +451,7 @@ function PublicContentAdmin({ setMessage, locale }) {
       </Tabs>
 
       {cmsTab === 'homepage' && <Grid container spacing={3}>
-        <Grid item xs={12} md={5}><Box component="form" onSubmit={(e) => { e.preventDefault(); saveItem('homepage', heroForm) }}><Stack spacing={2}>
+        <Grid item xs={12} md={5}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('homepage', heroForm) }}><Stack spacing={2.25}>
           <Typography variant="h6" fontWeight={900}>{editing.type === 'homepage' ? d.editHomepage : d.createHomepage}</Typography>
           {localeField(heroForm, setHeroForm)}
           <TextField label={d.eyebrow} value={heroForm.eyebrow || ''} onChange={(e) => setHeroForm({ ...heroForm, eyebrow: e.target.value })} />
@@ -472,7 +472,7 @@ function PublicContentAdmin({ setMessage, locale }) {
       </Grid>}
 
       {cmsTab === 'courses' && <Grid container spacing={3}>
-        <Grid item xs={12} md={5}><Box component="form" onSubmit={(e) => { e.preventDefault(); saveItem('courses', courseForm) }}><Stack spacing={2}>
+        <Grid item xs={12} md={5}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('courses', courseForm) }}><Stack spacing={2.25}>
           <Typography variant="h6" fontWeight={900}>{editing.type === 'courses' ? d.editCourse : d.createCourse}</Typography>
           {localeField(courseForm, setCourseForm)}
           <TextField required label={d.courseTitle} value={courseForm.title} onChange={(e) => setCourseForm({ ...courseForm, title: e.target.value })} />
@@ -487,7 +487,7 @@ function PublicContentAdmin({ setMessage, locale }) {
       </Grid>}
 
       {cmsTab === 'teachers' && <Grid container spacing={3}>
-        <Grid item xs={12} md={5}><Box component="form" onSubmit={(e) => { e.preventDefault(); saveItem('teachers', teacherForm) }}><Stack spacing={2}>
+        <Grid item xs={12} md={5}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('teachers', teacherForm) }}><Stack spacing={2.25}>
           <Typography variant="h6" fontWeight={900}>{editing.type === 'teachers' ? d.editPublicTeacher : d.createPublicTeacher}</Typography>
           {localeField(teacherForm, setTeacherForm)}
           <TextField required label={d.name} value={teacherForm.name} onChange={(e) => setTeacherForm({ ...teacherForm, name: e.target.value })} />
@@ -502,7 +502,7 @@ function PublicContentAdmin({ setMessage, locale }) {
       </Grid>}
 
       {cmsTab === 'testimonials' && <Grid container spacing={3}>
-        <Grid item xs={12} md={5}><Box component="form" onSubmit={(e) => { e.preventDefault(); saveItem('testimonials', testimonialForm) }}><Stack spacing={2}>
+        <Grid item xs={12} md={5}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('testimonials', testimonialForm) }}><Stack spacing={2.25}>
           <Typography variant="h6" fontWeight={900}>{editing.type === 'testimonials' ? d.editTestimonial : d.createTestimonial}</Typography>
           {localeField(testimonialForm, setTestimonialForm)}
           <TextField required label={d.studentLabel} value={testimonialForm.student} onChange={(e) => setTestimonialForm({ ...testimonialForm, student: e.target.value })} />
@@ -516,7 +516,7 @@ function PublicContentAdmin({ setMessage, locale }) {
       </Grid>}
 
       {cmsTab === 'posts' && <Grid container spacing={3}>
-        <Grid item xs={12} md={5}><Box component="form" onSubmit={(e) => { e.preventDefault(); saveItem('posts', postForm) }}><Stack spacing={2}>
+        <Grid item xs={12} md={5}><Box className="cmsFormPanel" component="form" onSubmit={(e) => { e.preventDefault(); saveItem('posts', postForm) }}><Stack spacing={2.25}>
           <Typography variant="h6" fontWeight={900}>{editing.type === 'posts' ? d.editBlogPost : d.createBlogPost}</Typography>
           {localeField(postForm, setPostForm)}
           <TextField required label={d.slug} helperText={d.slugHelp} value={postForm.slug} onChange={(e) => setPostForm({ ...postForm, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') })} />
